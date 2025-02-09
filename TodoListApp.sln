@@ -13,7 +13,31 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		user-stories.md = user-stories.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoListApp.WebApp", "TodoListApp.WebApp\TodoListApp.WebApp.csproj", "{8C30B889-F388-420C-8ABC-4AB2A5FAA495}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoListApp.WebApi", "TodoListApp.WebApi\TodoListApp.WebApi.csproj", "{D17F2741-CC8C-408E-9054-C7A70B88E2A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoListApp.WebApi.Models", "TodoListApp.WebApi.Models\TodoListApp.WebApi.Models.csproj", "{42B3EFBA-7BA0-4530-9E29-9ADD85FF3A97}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8C30B889-F388-420C-8ABC-4AB2A5FAA495}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C30B889-F388-420C-8ABC-4AB2A5FAA495}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C30B889-F388-420C-8ABC-4AB2A5FAA495}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C30B889-F388-420C-8ABC-4AB2A5FAA495}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D17F2741-CC8C-408E-9054-C7A70B88E2A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D17F2741-CC8C-408E-9054-C7A70B88E2A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D17F2741-CC8C-408E-9054-C7A70B88E2A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D17F2741-CC8C-408E-9054-C7A70B88E2A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42B3EFBA-7BA0-4530-9E29-9ADD85FF3A97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42B3EFBA-7BA0-4530-9E29-9ADD85FF3A97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42B3EFBA-7BA0-4530-9E29-9ADD85FF3A97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42B3EFBA-7BA0-4530-9E29-9ADD85FF3A97}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
