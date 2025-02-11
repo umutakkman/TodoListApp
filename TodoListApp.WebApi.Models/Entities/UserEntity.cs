@@ -13,4 +13,8 @@ public class UserEntity
 
     [Required(ErrorMessage = "A password is required.")]
     public string Password { get; set; } = string.Empty;
+
+    public virtual ICollection<CommentEntity> Comments { get; set; } = new List<CommentEntity>();
+
+    public virtual ICollection<TaskItemEntity> TaskItems { get; set; } = new List<TaskItemEntity>();
 }

@@ -46,7 +46,7 @@ public class TodoListController : ControllerBase
                 Description = x.Description,
                 CreationDate = x.CreationDate,
                 DueDate = x.DueDate,
-                StatusId = x.StatusId,
+                Status = x.Status,
                 UserId = x.UserId,
             }).ToList(),
         };

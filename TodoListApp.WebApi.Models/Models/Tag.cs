@@ -6,5 +6,5 @@ public class Tag
 
     public string Name { get; set; } = string.Empty;
 
-    public ICollection<TaskItem> TaskItems { get; } = new List<TaskItem>();
+    public ICollection<TaskItem> TaskItems { get; set; } = new List<TaskItem>();
 }

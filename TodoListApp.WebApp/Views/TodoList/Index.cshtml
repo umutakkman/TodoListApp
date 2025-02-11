@@ -1,0 +1,35 @@
+@model IEnumerable<TodoListApp.WebApi.Models.TodoListWebApiModel>
+
+@{
+	ViewData["Title"] = "My To-Do Lists";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Title</th>
+			<th>Description</th>
+			<!-- Add more headers if needed -->
+		</tr>
+	</thead>
+	<tbody>
+		@if (Model != null && Model.Any())
+		{
+			foreach (var list in Model)
+			{
+				<tr>
+					<td>@list.Title</td>
+					<td>@list.Description</td>
+				</tr>
+			}
+		}
+		else
+		{
+			<tr>
+				<td colspan="2">No to-do lists found.</td>
+			</tr>
+		}
+	</tbody>
+</table>

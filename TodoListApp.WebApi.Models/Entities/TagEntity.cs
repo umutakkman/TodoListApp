@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using TodoListApp.WebApi.Models.Models;
 
 namespace TodoListApp.WebApi.Models.Entities;
 
@@ -10,4 +11,6 @@ public class TagEntity
     [Required(ErrorMessage = "A name is required.")]
     [StringLength(50, ErrorMessage = "The name cannot be longer than 50 characters.")]
     public string Name { get; set; } = string.Empty;
+
+    public virtual ICollection<TaskItem> TaskItems { get; } = new List<TaskItem>();
 }

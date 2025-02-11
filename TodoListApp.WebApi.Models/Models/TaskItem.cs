@@ -24,8 +24,8 @@ namespace TodoListApp.WebApi.Models.Models
 
         public TodoList TodoList { get; set; } = null!;
 
-        public ICollection<Tag> Tags { get; } = new List<Tag>();
+        public ICollection<Tag> Tags { get; set; } = new List<Tag>();
 
-        public ICollection<Comment> Comments { get; } = new List<Comment>();
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }

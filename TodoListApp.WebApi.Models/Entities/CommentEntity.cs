@@ -16,11 +16,11 @@ public class CommentEntity
 
     public int TaskItemId { get; set; }
 
-    public int UserId { get; set; }
+    public int? UserId { get; set; }
 
     [ForeignKey(nameof(TaskItemId))]
     public virtual TaskItemEntity TaskItem { get; set; } = null!;
 
     [ForeignKey(nameof(UserId))]
-    public virtual UserEntity User { get; set; } = null!;
+    public virtual UserEntity? User { get; set; }
 }
