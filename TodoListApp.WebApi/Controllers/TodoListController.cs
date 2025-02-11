@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TodoListApp.Services.Interfaces;
 using TodoListApp.WebApi.Models.Models;
 
@@ -25,13 +26,32 @@ public class TodoListController : ControllerBase
     [HttpGet("{id:int}")]
     public ActionResult<TodoList> GetTodoListById(int id)
     {
-        var list = this.todoListDatabaseService.TodoLists.FirstOrDefault(x => x.Id == id);
+        var list = this.todoListDatabaseService.TodoLists
+            .Include(x => x.TaskItems)
+            .FirstOrDefault(x => x.Id == id);
         if (list == null)
         {
             return this.NotFound();
         }
 
-        return this.Ok(list);
+        var model = new TodoList
+        {
+            Id = list.Id,
+            Title = list.Title,
+            Description = list.Description,
+            TaskItems = list.TaskItems.Select(x => new TaskItem
+            {
+                Id = x.Id,
+                Title = x.Title,
+                Description = x.Description,
+                CreationDate = x.CreationDate,
+                DueDate = x.DueDate,
+                StatusId = x.StatusId,
+                UserId = x.UserId,
+            }).ToList(),
+        };
+
+        return this.Ok(model);
     }
 
     [HttpPost]
