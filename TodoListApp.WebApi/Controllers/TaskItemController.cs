@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using TodoListApp.Common;
 using TodoListApp.Services.Interfaces;
 using TodoListApp.WebApi.Models.Models;
 
@@ -16,7 +17,7 @@ public class TaskItemController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<TaskItem> GetTaskItems()
+    public ActionResult<IEnumerable<TaskItem>> GetTaskItems()
     {
         var items = this.taskItemDatabaseService.TaskItems.ToList();
         return this.Ok(items);
@@ -75,6 +76,49 @@ public class TaskItemController : ControllerBase
         }
 
         this.taskItemDatabaseService.DeleteTaskItem(existing);
+        return this.NoContent();
+    }
+
+    [HttpGet("assigned")]
+    public ActionResult<IEnumerable<TaskItem>> GetAssignedTasks(
+        [FromQuery] string? status = null,
+        [FromQuery] string? sortBy = "name",
+        [FromQuery] string? sortOrder = "asc")
+    {
+        int currentUserId = 1;
+
+        var query = this.taskItemDatabaseService.TaskItems.Where(x => x.UserId == currentUserId);
+
+        if (string.IsNullOrEmpty(status) || status.ToUpperInvariant().Equals("ACTIVE", StringComparison.Ordinal))
+        {
+            query = query.Where(x => !x.Status.IsCompleted());
+        }
+
+        query = sortBy?.ToUpperInvariant() switch
+        {
+            "duedate" => sortOrder?.ToUpperInvariant() == "desc"
+                            ? query.OrderByDescending(t => t.DueDate)
+                            : query.OrderBy(t => t.DueDate),
+            "name" or _ => sortOrder?.ToUpperInvariant() == "desc"
+                            ? query.OrderByDescending(t => t.Title)
+                            : query.OrderBy(t => t.Title)
+        };
+
+        var tasks = query.ToList();
+        return this.Ok(tasks);
+    }
+
+    [HttpPut("{id:int}/status")]
+    public IActionResult UpdateTaskStatus(int id, [FromBody] Common.TaskStatus status)
+    {
+        var existing = this.taskItemDatabaseService.TaskItems.FirstOrDefault(x => x.Id == id);
+        if (existing == null)
+        {
+            return this.NotFound();
+        }
+
+        existing.Status = status;
+        this.taskItemDatabaseService.UpdateTaskItem(existing);
         return this.NoContent();
     }
 }

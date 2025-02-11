@@ -1,3 +1,5 @@
+using TaskStatus = TodoListApp.Common.TaskStatus;
+
 namespace TodoListApp.WebApi.Models.Models
 {
     public class TaskItem
@@ -12,13 +14,11 @@ namespace TodoListApp.WebApi.Models.Models
 
         public DateTime DueDate { get; set; } = DateTime.Now;
 
-        public int StatusId { get; set; }
+        public TaskStatus Status { get; set; } = TaskStatus.NotStarted;
 
         public int UserId { get; set; }
 
         public int TodoListId { get; set; }
-
-        public Status Status { get; set; } = null!;
 
         public User User { get; set; } = null!;
 

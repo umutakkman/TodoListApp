@@ -30,6 +30,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TodoListApp.Common\TodoListApp.Common.csproj" />
     <ProjectReference Include="..\TodoListApp.Services.Database\TodoListApp.Services.Database.csproj" />
     <ProjectReference Include="..\TodoListApp.Services\TodoListApp.Services.csproj" />
   </ItemGroup>
