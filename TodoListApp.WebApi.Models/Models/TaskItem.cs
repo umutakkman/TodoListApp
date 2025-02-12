@@ -16,16 +16,16 @@ namespace TodoListApp.WebApi.Models.Models
 
         public TaskStatus Status { get; set; } = TaskStatus.NotStarted;
 
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
 
         public int TodoListId { get; set; }
 
-        public User User { get; set; } = null!;
+        public User? User { get; set; }
 
-        public TodoList TodoList { get; set; } = null!;
+        public TodoList? TodoList { get; set; }
 
-        public ICollection<Tag> Tags { get; set; } = new List<Tag>();
+        public ICollection<Tag>? Tags { get; set; } = new List<Tag>();
 
-        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+        public ICollection<Comment>? Comments { get; set; } = new List<Comment>();
     }
 }

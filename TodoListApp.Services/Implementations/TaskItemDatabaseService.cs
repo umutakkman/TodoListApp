@@ -32,7 +32,7 @@ public class TaskItemDatabaseService : ITaskItemDatabaseService
             throw new InvalidOperationException("Task item not found");
         }
 
-        this.context.Update(taskItem);
+        this.context.Entry(existing).CurrentValues.SetValues(taskItem);
         this.context.SaveChanges();
     }
 

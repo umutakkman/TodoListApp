@@ -1,0 +1,31 @@
+@model TodoListApp.WebApi.Models.ApiModels.TaskItemWebApiModel
+
+@{
+	ViewData["Title"] = "Task Item Details";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+	<dl class="row">
+		<dt class="col-sm-2">Title</dt>
+		<dd class="col-sm-10">@Model.Title</dd>
+		<dt class="col-sm-2">Description</dt>
+		<dd class="col-sm-10">@Model.Description</dd>
+		<dt class="col-sm-2">Creation Date</dt>
+		<dd class="col-sm-10">@Model.CreationDate</dd>
+		<dt class="col-sm-2">Due Date</dt>
+		<dd class="col-sm-10">@Model.DueDate</dd>
+		<dt class="col-sm-2">Status</dt>
+		<dd class="col-sm-10">@Model.Status</dd>
+		<dt class="col-sm-2">User ID</dt>
+		<dd class="col-sm-10">@Model.UserId</dd>
+		<dt class="col-sm-2">Todo List ID</dt>
+		<dd class="col-sm-10">@Model.TodoListId</dd>
+	</dl>
+</div>
+<div>
+	<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+	<a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+	<a asp-controller="TodoList" asp-action="Details" asp-route-id="@Model.TodoListId" class="btn btn-secondary">Back to List</a>
+</div>

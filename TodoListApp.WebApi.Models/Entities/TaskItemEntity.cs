@@ -22,17 +22,17 @@ public class TaskItemEntity
 
     public TaskStatus Status { get; set; } = TaskStatus.NotStarted;
 
-    public int UserId { get; set; }
+    public int? UserId { get; set; }
 
     public int TodoListId { get; set; }
 
     [ForeignKey(nameof(UserId))]
-    public UserEntity User { get; set; } = null!;
+    public UserEntity? User { get; set; }
 
     [ForeignKey(nameof(TodoListId))]
-    public TodoListEntity TodoList { get; set; } = null!;
+    public TodoListEntity? TodoList { get; set; }
 
-    public virtual ICollection<TagEntity> Tags { get; } = new List<TagEntity>();
+    public virtual ICollection<TagEntity>? Tags { get; } = new List<TagEntity>();
 
-    public virtual ICollection<CommentEntity> Comments { get; } = new List<CommentEntity>();
+    public virtual ICollection<CommentEntity>? Comments { get; } = new List<CommentEntity>();
 }

@@ -84,7 +84,9 @@ public class TodoListController : ControllerBase
         }
 
         this.todoListDatabaseService.UpdateTodoList(todoList);
-        return this.NoContent();
+
+        var updatedEntity = this.todoListDatabaseService.TodoLists.FirstOrDefault(x => x.Id == id);
+        return this.Ok(updatedEntity);
     }
 
     [HttpDelete("{id:int}")]

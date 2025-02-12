@@ -1,0 +1,52 @@
+@model TodoListApp.WebApi.Models.ApiModels.TodoListWebApiModel
+
+@{
+	ViewData["Title"] = "Todo List Details";
+}
+
+<h1>@Model.Title</h1>
+<p>@Model.Description</p>
+
+<div>
+	<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit Todo List</a>
+	<a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete Todo List</a>
+	<a asp-action="Index" class="btn btn-secondary">Back to Todo Lists</a>
+</div>
+
+<hr />
+
+<h2>Task Items</h2>
+<div class="mb-3">
+	<a asp-controller="TaskItem" asp-action="Create" asp-route-todoListId="@Model.Id" class="btn btn-primary">Add New Task</a>
+</div>
+
+@if (Model.TaskItems != null && Model.TaskItems.Any())
+{
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>Title</th>
+				<th>Due Date</th>
+				<th>Status</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var task in Model.TaskItems)
+			{
+				<tr class="@(task.DueDate < DateTime.Now ? "table-danger" : "")">
+					<td>@task.Title</td>
+					<td>@task.DueDate.ToString("yyyy-MM-dd")</td>
+					<td>@task.Status</td>
+					<td>
+						<a asp-controller="TaskItem" asp-action="Details" asp-route-id="@task.Id" class="btn btn-info">View</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+else
+{
+	<p>No task items available for this Todo List.</p>
+}

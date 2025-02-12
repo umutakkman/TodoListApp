@@ -16,13 +16,6 @@ public class TaskItemController : ControllerBase
         this.taskItemDatabaseService = taskItemDatabaseService;
     }
 
-    [HttpGet]
-    public ActionResult<IEnumerable<TaskItem>> GetTaskItems()
-    {
-        var items = this.taskItemDatabaseService.TaskItems.ToList();
-        return this.Ok(items);
-    }
-
     [HttpGet("{id:int}")]
     public ActionResult<TaskItem> GetTaskItemById(int id)
     {
@@ -63,7 +56,9 @@ public class TaskItemController : ControllerBase
         }
 
         this.taskItemDatabaseService.UpdateTaskItem(taskItem);
-        return this.NoContent();
+
+        var updatedEntity = this.taskItemDatabaseService.TaskItems.FirstOrDefault(x => x.Id == id);
+        return this.Ok(updatedEntity);
     }
 
     [HttpDelete("{id:int}")]
@@ -79,14 +74,13 @@ public class TaskItemController : ControllerBase
         return this.NoContent();
     }
 
-    [HttpGet("assigned")]
+    [HttpGet("assigned/{currentUserId:int}")]
     public ActionResult<IEnumerable<TaskItem>> GetAssignedTasks(
+        int currentUserId,
         [FromQuery] string? status = null,
         [FromQuery] string? sortBy = "name",
         [FromQuery] string? sortOrder = "asc")
     {
-        int currentUserId = 1;
-
         var query = this.taskItemDatabaseService.TaskItems.Where(x => x.UserId == currentUserId);
 
         if (string.IsNullOrEmpty(status) || status.ToUpperInvariant().Equals("ACTIVE", StringComparison.Ordinal))

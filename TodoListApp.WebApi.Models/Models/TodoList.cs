@@ -8,6 +8,6 @@ namespace TodoListApp.WebApi.Models.Models
 
         public string? Description { get; set; }
 
-        public ICollection<TaskItem> TaskItems { get; set; } = new List<TaskItem>();
+        public ICollection<TaskItem>? TaskItems { get; set; } = new List<TaskItem>();
     }
 }

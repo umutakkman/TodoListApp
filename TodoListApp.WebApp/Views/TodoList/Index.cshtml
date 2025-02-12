@@ -1,34 +1,34 @@
-@model IEnumerable<TodoListApp.WebApi.Models.TodoListWebApiModel>
+@model IEnumerable<TodoListApp.WebApi.Models.ApiModels.TodoListWebApiModel>
 
 @{
-	ViewData["Title"] = "My To-Do Lists";
+	ViewData["Title"] = "Todo Lists";
 }
 
 <h1>@ViewData["Title"]</h1>
+
+<p>
+	<a asp-action="Create" class="btn btn-primary">Create New Todo List</a>
+</p>
 
 <table class="table table-striped">
 	<thead>
 		<tr>
 			<th>Title</th>
 			<th>Description</th>
-			<!-- Add more headers if needed -->
+			<th></th>
 		</tr>
 	</thead>
 	<tbody>
-		@if (Model != null && Model.Any())
-		{
-			foreach (var list in Model)
-			{
-				<tr>
-					<td>@list.Title</td>
-					<td>@list.Description</td>
-				</tr>
-			}
-		}
-		else
+		@foreach (var item in Model)
 		{
 			<tr>
-				<td colspan="2">No to-do lists found.</td>
+				<td>@item.Title</td>
+				<td>@item.Description</td>
+				<td>
+					<a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a>
+					<a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
+					<a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+				</td>
 			</tr>
 		}
 	</tbody>

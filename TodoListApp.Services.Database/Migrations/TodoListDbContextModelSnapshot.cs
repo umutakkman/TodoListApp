@@ -120,7 +120,7 @@ namespace TodoListApp.Services.Database.Migrations
                     b.Property<int>("TodoListId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -254,7 +254,7 @@ namespace TodoListApp.Services.Database.Migrations
                     b.Property<int>("TodoListId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -358,9 +358,7 @@ namespace TodoListApp.Services.Database.Migrations
 
                     b.HasOne("TodoListApp.WebApi.Models.Entities.UserEntity", "User")
                         .WithMany("TaskItems")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("TodoList");
 
@@ -398,9 +396,7 @@ namespace TodoListApp.Services.Database.Migrations
 
                     b.HasOne("TodoListApp.WebApi.Models.Models.User", "User")
                         .WithMany("TaskItems")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("TodoList");
 

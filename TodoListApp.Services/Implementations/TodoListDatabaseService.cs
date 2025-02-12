@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using TodoListApp.Services.Database.Data;
 using TodoListApp.Services.Interfaces;
 using TodoListApp.WebApi.Models.Models;
@@ -32,7 +33,7 @@ public class TodoListDatabaseService : ITodoListDatabaseService
             throw new InvalidOperationException("Task item not found");
         }
 
-        this.context.Update(todoList);
+        this.context.Entry(existing).CurrentValues.SetValues(todoList);
         this.context.SaveChanges();
     }
 

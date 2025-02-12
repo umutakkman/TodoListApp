@@ -89,7 +89,7 @@ namespace TodoListApp.Services.Database.Migrations
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: true),
                     TodoListId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -105,8 +105,7 @@ namespace TodoListApp.Services.Database.Migrations
                         name: "FK_TaskItemEntity_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -166,7 +165,7 @@ namespace TodoListApp.Services.Database.Migrations
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: true),
                     TodoListId = table.Column<int>(type: "int", nullable: false),
                     TagEntityId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -188,8 +187,7 @@ namespace TodoListApp.Services.Database.Migrations
                         name: "FK_TaskItems_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
