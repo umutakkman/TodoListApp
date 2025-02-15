@@ -12,7 +12,7 @@ using TodoListApp.Services.Database.Data;
 namespace TodoListApp.Services.Database.Migrations
 {
     [DbContext(typeof(TodoListDbContext))]
-    [Migration("20250215192107_InitialCreate")]
+    [Migration("20250215205119_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

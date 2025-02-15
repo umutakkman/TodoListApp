@@ -34,5 +34,5 @@ public class TaskItemEntity
 
     public virtual ICollection<TagEntity>? Tags { get; set; } = new List<TagEntity>();
 
-    public virtual ICollection<CommentEntity>? Comments { get; } = new List<CommentEntity>();
+    public virtual ICollection<CommentEntity>? Comments { get; set; } = new List<CommentEntity>();
 }

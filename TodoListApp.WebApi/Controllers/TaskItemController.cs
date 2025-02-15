@@ -13,26 +13,29 @@ namespace TodoListApp.WebApi.Controllers
     {
         private readonly ITaskItemDatabaseService taskItemDatabaseService;
         private readonly ITagDatabaseService tagDatabaseService;
+        private readonly ICommentDatabaseService commentDatabaseService;
 
-        public TaskItemController(ITaskItemDatabaseService taskItemDatabaseService, ITagDatabaseService tagDatabaseService)
+        public TaskItemController(ITaskItemDatabaseService taskItemDatabaseService, ITagDatabaseService tagDatabaseService, ICommentDatabaseService commentDatabaseService)
         {
             this.taskItemDatabaseService = taskItemDatabaseService;
             this.tagDatabaseService = tagDatabaseService;
+            this.commentDatabaseService = commentDatabaseService;
         }
 
         [HttpGet("{id:int}")]
         public ActionResult<TaskItemWebApiModel> GetTaskItemById(int id)
         {
-            var entity = this.taskItemDatabaseService.TaskItems.FirstOrDefault(x => x.Id == id);
+            var entity = this.taskItemDatabaseService.TaskItems
+                        .Include(t => t.Tags)
+                        .Include(t => t.Comments)
+                        .FirstOrDefault(t => t.Id == id);
+
             if (entity == null)
             {
                 return this.NotFound();
             }
 
-            entity = this.taskItemDatabaseService.TaskItems
-                        .Include(t => t.Tags)
-                        .FirstOrDefault(t => t.Id == id);
-
+            ArgumentNullException.ThrowIfNull(entity);
             var dto = MapEntityToDto(entity);
             return this.Ok(dto);
         }
@@ -229,6 +232,155 @@ namespace TodoListApp.WebApi.Controllers
             return this.NoContent();
         }
 
+        [ProducesResponseType(typeof(IEnumerable<CommentWebApiModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpGet("{taskId:int}/comments/{commentId:int}")]
+        public IActionResult GetComment(int taskId, int commentId)
+        {
+            var task = this.taskItemDatabaseService.TaskItems
+                        .Include(t => t.Comments)
+                        .FirstOrDefault(t => t.Id == taskId);
+            if (task == null)
+            {
+                return this.NotFound();
+            }
+
+            if (task.Comments == null || task.Comments.Count == 0)
+            {
+                return this.NotFound("Comments not found.");
+            }
+
+            var comment = task.Comments.FirstOrDefault(c => c.Id == commentId);
+            if (comment == null)
+            {
+                return this.NotFound();
+            }
+
+            var commentDto = new CommentWebApiModel
+            {
+                Id = comment.Id,
+                Text = comment.Text,
+                CreationDate = comment.CreationDate,
+                TaskItemId = comment.TaskItemId,
+                UserId = comment.UserId,
+            };
+            return this.Ok(commentDto);
+        }
+
+        [ProducesResponseType(typeof(CommentEntity), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpPost("{taskId:int}/comments")]
+        public IActionResult AddCommentToTask(int taskId, [FromBody] CommentWebApiModel dto)
+        {
+            if (dto == null)
+            {
+                return this.BadRequest("Invalid comment data.");
+            }
+
+            var task = this.taskItemDatabaseService.TaskItems
+                        .Include(t => t.Comments)
+                        .FirstOrDefault(t => t.Id == taskId);
+
+            if (task == null)
+            {
+                return this.NotFound();
+            }
+
+            var comment = new CommentEntity
+            {
+                Text = dto.Text,
+                TaskItemId = taskId,
+                CreationDate = DateTime.Now,
+                UserId = dto.UserId,
+            };
+
+            this.commentDatabaseService.CreateComment(comment);
+
+            var commentDto = new CommentWebApiModel
+            {
+                Id = comment.Id,
+                Text = comment.Text,
+                CreationDate = comment.CreationDate,
+                TaskItemId = comment.TaskItemId,
+                UserId = comment.UserId,
+            };
+
+            return this.Ok(commentDto);
+        }
+
+        [ProducesResponseType(typeof(CommentWebApiModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpPut("{taskId:int}/comments/{commentId:int}")]
+        public IActionResult UpdateCommentOnTask(int taskId, int commentId, [FromBody] CommentWebApiModel dto)
+        {
+            if (dto == null)
+            {
+                return this.BadRequest("Invalid comment data.");
+            }
+
+            var task = this.taskItemDatabaseService.TaskItems
+                        .Include(t => t.Comments)
+                        .FirstOrDefault(t => t.Id == taskId);
+            if (task == null)
+            {
+                return this.NotFound("Task not found.");
+            }
+
+            if (task.Comments == null)
+            {
+                return this.NotFound("Comments not found.");
+            }
+
+            var existingComment = task.Comments.FirstOrDefault(c => c.Id == commentId);
+            if (existingComment == null)
+            {
+                return this.NotFound("Comment not found.");
+            }
+
+            existingComment.Text = dto.Text;
+
+            this.commentDatabaseService.UpdateComment(existingComment);
+
+            var updatedDto = new CommentWebApiModel
+            {
+                Id = existingComment.Id,
+                Text = existingComment.Text,
+                CreationDate = existingComment.CreationDate,
+                TaskItemId = existingComment.TaskItemId,
+                UserId = existingComment.UserId,
+            };
+
+            return this.Ok(updatedDto);
+        }
+
+        [HttpDelete("{taskId:int}/comments/{commentId:int}")]
+        public IActionResult DeleteCommentFromTask(int taskId, int commentId)
+        {
+            var task = this.taskItemDatabaseService.TaskItems
+                        .Include(t => t.Comments)
+                        .FirstOrDefault(t => t.Id == taskId);
+            if (task == null)
+            {
+                return this.NotFound("Task not found.");
+            }
+
+            if (task.Comments == null)
+            {
+                return this.NotFound("Comments not found.");
+            }
+
+            var comment = task.Comments.FirstOrDefault(c => c.Id == commentId);
+            if (comment == null)
+            {
+                return this.NotFound("Comment not found.");
+            }
+
+            this.commentDatabaseService.DeleteComment(comment);
+            return this.NoContent();
+        }
+
         private static TaskItemWebApiModel MapEntityToDto(TaskItemEntity entity)
         {
             return new TaskItemWebApiModel
@@ -246,6 +398,14 @@ namespace TodoListApp.WebApi.Controllers
                     Id = t.Id,
                     Name = t.Name,
                 }).ToList() ?? new List<TagWebApiModel>(),
+                Comments = entity.Comments?.Select(c => new CommentWebApiModel
+                {
+                    Id = c.Id,
+                    Text = c.Text,
+                    CreationDate = c.CreationDate,
+                    TaskItemId = c.TaskItemId,
+                    UserId = c.UserId,
+                }).ToList() ?? new List<CommentWebApiModel>(),
             };
         }
 

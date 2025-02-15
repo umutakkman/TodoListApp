@@ -17,6 +17,7 @@ builder.Services.AddDbContext<TodoListDbContext>(options =>
 builder.Services.AddScoped<ITodoListDatabaseService, TodoListDatabaseService>();
 builder.Services.AddScoped<ITaskItemDatabaseService, TaskItemDatabaseService>();
 builder.Services.AddScoped<ITagDatabaseService, TagDatabaseService>();
+builder.Services.AddScoped<ICommentDatabaseService, CommentDatabaseService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
