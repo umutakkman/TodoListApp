@@ -9,11 +9,13 @@ public class TaskItemController : Controller
 {
     private readonly ITaskItemWebApiService taskItemWebApiService;
     private readonly ITagWebApiService tagWebApiService;
+    private readonly ICommentWebApiService commentWebApiService;
 
-    public TaskItemController(ITaskItemWebApiService taskItemWebApiService, ITagWebApiService tagWebApiService)
+    public TaskItemController(ITaskItemWebApiService taskItemWebApiService, ITagWebApiService tagWebApiService, ICommentWebApiService commentWebApiService)
     {
         this.taskItemWebApiService = taskItemWebApiService;
         this.tagWebApiService = tagWebApiService;
+        this.commentWebApiService = commentWebApiService;
     }
 
     public async Task<IActionResult> Details(int id)
@@ -225,5 +227,68 @@ public class TaskItemController : Controller
 
         await this.tagWebApiService.RemoveTagFromTaskAsync(taskId, tagId);
         return this.RedirectToAction(nameof(this.Details), new { id = taskId });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddComment(int taskId, string text)
+    {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest(this.ModelState);
+        }
+
+        if (string.IsNullOrEmpty(text))
+        {
+            this.ModelState.AddModelError("Text", "Comment text is required.");
+            return this.BadRequest(this.ModelState);
+        }
+
+        var commentDto = new CommentWebApiModel { Text = text };
+        _ = await this.commentWebApiService.CreateCommentAsync(taskId, commentDto);
+        return this.RedirectToAction(nameof(this.Edit), new { id = taskId });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemoveComment(int taskId, int commentId)
+    {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest(this.ModelState);
+        }
+
+        await this.commentWebApiService.DeleteCommentAsync(taskId, commentId);
+        return this.RedirectToAction(nameof(this.Edit), new { id = taskId });
+    }
+
+    public async Task<IActionResult> EditComment(int taskId, int commentId)
+    {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest(this.ModelState);
+        }
+
+        var comment = await this.commentWebApiService.GetCommentAsync(taskId, commentId);
+        if (comment == null)
+        {
+            return this.NotFound();
+        }
+
+        return this.View(comment);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditComment(CommentWebApiModel comment)
+    {
+        ArgumentNullException.ThrowIfNull(comment);
+        if (!this.ModelState.IsValid)
+        {
+            return this.View(comment);
+        }
+
+        _ = await this.commentWebApiService.UpdateCommentAsync(comment.TaskItemId, comment.Id, comment);
+        return this.RedirectToAction("Edit", new { id = comment.TaskItemId });
     }
 }

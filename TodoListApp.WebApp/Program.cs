@@ -21,6 +21,11 @@ builder.Services.AddHttpClient<ITagWebApiService, TagWebApiService>(client =>
     client.BaseAddress = new Uri(builder.Configuration["TodoListApiBaseUrl"]);
 });
 
+builder.Services.AddHttpClient<ICommentWebApiService, CommentWebApiService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["TodoListApiBaseUrl"]);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -93,6 +93,54 @@
 
 <hr />
 
+div>
+<h3>Manage Comments</h3>
+
+<h4>Existing Comments:</h4>
+@if (Model.Comments != null && Model.Comments.Any())
+{
+	<ul class="list-unstyled">
+		@foreach (var comment in Model.Comments)
+		{
+			<li>
+				<div>
+					<strong>@comment.CreationDate.ToString("yyyy-MM-dd HH:mm"):</strong> @comment.Text
+				</div>
+				<div>
+					<a asp-action="EditComment" asp-route-taskId="@Model.Id" asp-route-commentId="@comment.Id" class="btn btn-sm btn-primary me-2">Edit</a>
+
+					<form asp-action="RemoveComment" method="post" class="d-inline">
+						<input type="hidden" name="taskId" value="@Model.Id" />
+						<input type="hidden" name="commentId" value="@comment.Id" />
+						<button type="submit" class="btn btn-sm btn-danger">Remove</button>
+					</form>
+				</div>
+			</li>
+		}
+	</ul>
+}
+else
+{
+	<p>No comments available.</p>
+}
+
+<hr />
+
+<h4>Add New Comment:</h4>
+<form asp-action="AddComment" method="post" class="row g-3">
+	<input type="hidden" name="taskId" value="@Model.Id" />
+	<div class="col-auto">
+		<label for="commentText" class="visually-hidden">Comment</label>
+		<input type="text" id="commentText" name="Text" class="form-control" placeholder="Enter your comment" required />
+	</div>
+	<div class="col-auto">
+		<button type="submit" class="btn btn-primary mb-3">Add Comment</button>
+	</div>
+</form>
+</div>
+
+<hr />
+
 <div>
 	<a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">Back to Details</a>
 </div>

@@ -49,6 +49,32 @@
 <hr />
 
 <div>
+	<h3>Comments</h3>
+	@if (Model.Comments != null && Model.Comments.Any())
+	{
+		<ul class="list-unstyled">
+			@foreach (var comment in Model.Comments)
+			{
+				<li>
+					<div>
+						<strong>Comment:</strong> @comment.Text
+					</div>
+					<div>
+						<small>Posted on: @comment.CreationDate.ToString("yyyy-MM-dd HH:mm")</small>
+					</div>
+				</li>
+			}
+		</ul>
+	}
+	else
+	{
+		<p>No comments available.</p>
+	}
+</div>
+
+<hr />
+
+<div>
 	<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
 	<a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
 	<a asp-controller="TodoList" asp-action="Details" asp-route-id="@Model.TodoListId" class="btn btn-secondary">Back to List</a>
