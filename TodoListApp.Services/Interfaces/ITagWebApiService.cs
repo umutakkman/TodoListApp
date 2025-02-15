@@ -9,7 +9,7 @@ public interface ITagWebApiService
 
     Task<IEnumerable<TaskItemWebApiModel>> GetTasksByTagAsync(int tagId);
 
-    Task<IEnumerable<TagWebApiModel>> AddTagToTaskAsync(int taskId, TagWebApiModel tag);
+    Task<IEnumerable<TagWebApiModel>> AddTagToTaskAsync(int taskId, int tagId);
 
     Task RemoveTagFromTaskAsync(int taskId, int tagId);
 }

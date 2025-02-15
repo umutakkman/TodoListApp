@@ -33,9 +33,9 @@ public class TagWebApiService : ITagWebApiService
         return response;
     }
 
-    public async Task<IEnumerable<TagWebApiModel>> AddTagToTaskAsync(int taskId, TagWebApiModel tag)
+    public async Task<IEnumerable<TagWebApiModel>> AddTagToTaskAsync(int taskId, int tagId)
     {
-        var response = await this.httpClient.PostAsJsonAsync($"api/taskItem/{taskId}/tags", tag);
+        var response = await this.httpClient.PostAsJsonAsync($"api/taskItem/{taskId}/tags", tagId);
         _ = response.EnsureSuccessStatusCode();
         var updatedTags = await response.Content.ReadFromJsonAsync<IEnumerable<TagWebApiModel>>();
         ArgumentNullException.ThrowIfNull(updatedTags);

@@ -22,10 +22,32 @@
 		<dd class="col-sm-10">@Model.UserId</dd>
 		<dt class="col-sm-2">Todo List ID</dt>
 		<dd class="col-sm-10">@Model.TodoListId</dd>
-		<dt class="col-sm-2">Tags</dt>
-		<dd class="col-sm-10">@Model.Tags</dd>
 	</dl>
 </div>
+
+<hr />
+
+<div>
+	<h3>Assigned Tags</h3>
+	@if (Model.Tags != null && Model.Tags.Any())
+	{
+		<ul class="list-unstyled">
+			@foreach (var tag in Model.Tags)
+			{
+				<li>
+					<span class="badge bg-info">@tag.Name</span>
+				</li>
+			}
+		</ul>
+	}
+	else
+	{
+		<p>No tags assigned.</p>
+	}
+</div>
+
+<hr />
+
 <div>
 	<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
 	<a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>

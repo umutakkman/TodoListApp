@@ -12,10 +12,12 @@ namespace TodoListApp.WebApi.Controllers
     public class TaskItemController : ControllerBase
     {
         private readonly ITaskItemDatabaseService taskItemDatabaseService;
+        private readonly ITagDatabaseService tagDatabaseService;
 
-        public TaskItemController(ITaskItemDatabaseService taskItemDatabaseService)
+        public TaskItemController(ITaskItemDatabaseService taskItemDatabaseService, ITagDatabaseService tagDatabaseService)
         {
             this.taskItemDatabaseService = taskItemDatabaseService;
+            this.tagDatabaseService = tagDatabaseService;
         }
 
         [HttpGet("{id:int}")]
@@ -26,6 +28,10 @@ namespace TodoListApp.WebApi.Controllers
             {
                 return this.NotFound();
             }
+
+            entity = this.taskItemDatabaseService.TaskItems
+                        .Include(t => t.Tags)
+                        .FirstOrDefault(t => t.Id == id);
 
             var dto = MapEntityToDto(entity);
             return this.Ok(dto);
@@ -164,19 +170,22 @@ namespace TodoListApp.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("{taskId:int}/tags")]
-        public IActionResult AddTagToTask(int taskId, [FromBody] TagWebApiModel tagDto)
+        public IActionResult AddTagToTask(int taskId, [FromBody] int tagId)
         {
             var task = this.taskItemDatabaseService.TaskItems
                         .Include(t => t.Tags)
                         .FirstOrDefault(t => t.Id == taskId);
+
             if (task == null)
             {
                 return this.NotFound();
             }
 
-            if (tagDto == null)
+            var tag = this.tagDatabaseService.Tags.FirstOrDefault(t => t.Id == tagId);
+
+            if (tag == null)
             {
-                return this.BadRequest("Invalid tag data.");
+                return this.BadRequest("Tag not found.");
             }
 
             if (task.Tags == null)
@@ -184,14 +193,13 @@ namespace TodoListApp.WebApi.Controllers
                 task.Tags = new List<TagEntity>();
             }
 
-            var newTag = new TagEntity
+            if (!task.Tags.Any(t => t.Id == tagId))
             {
-                Name = tagDto.Name,
-            };
-            task.Tags.Add(newTag);
-            this.taskItemDatabaseService.UpdateTaskItem(task);
-            var tagDtos = task.Tags.Select(t => new TagWebApiModel { Id = t.Id, Name = t.Name });
-            return this.Ok(tagDtos);
+                task.Tags.Add(tag);
+                this.taskItemDatabaseService.UpdateTaskItem(task);
+            }
+
+            return this.Ok(task.Tags);
         }
 
         [HttpDelete("{taskId:int}/tag/{tagId:int}")]

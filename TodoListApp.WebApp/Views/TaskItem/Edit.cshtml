@@ -1,4 +1,6 @@
 @model TodoListApp.WebApi.Models.ApiModels.TaskItemWebApiModel
+@using TodoListApp.WebApi.Models.ApiModels;
+@using TodoListApp.Common;
 
 @{
 	ViewData["Title"] = "Edit Task Item";
@@ -38,6 +40,62 @@
 		<input type="submit" value="Save" class="btn btn-primary" />
 	</div>
 </form>
+
+<hr />
+
+<div>
+
+	<h4>Current Tags:</h4>
+	@if (Model.Tags != null && Model.Tags.Any())
+	{
+		<ul class="list-unstyled">
+			@foreach (var tag in Model.Tags)
+			{
+				<li>
+					<span class="badge bg-info me-2">@tag.Name</span>
+					<form asp-action="RemoveTag" method="post" class="d-inline">
+						<input type="hidden" name="taskId" value="@Model.Id" />
+						<input type="hidden" name="tagId" value="@tag.Id" />
+						<button type="submit" class="btn btn-sm btn-danger">Remove</button>
+					</form>
+				</li>
+			}
+		</ul>
+	}
+	else
+	{
+		<p>No tags assigned.</p>
+	}
+
+	<hr />
+
+	<h4>Add a Tag:</h4>
+	<form asp-action="AddTag" method="post" class="row g-3">
+		<input type="hidden" name="taskId" value="@Model.Id" />
+		<div class="col-auto">
+			<label for="tagId" class="visually-hidden">Select Tag</label>
+			<select name="tagId" id="tagId" class="form-select" required>
+				<option value="">-- Select Tag --</option>
+				@if (ViewBag.AvailableTags != null)
+				{
+					foreach (var tag in (IEnumerable<TagWebApiModel>)ViewBag.AvailableTags)
+					{
+						<option value="@tag.Id">@tag.Name</option>
+					}
+				}
+			</select>
+		</div>
+		<div class="col-auto">
+			<button type="submit" class="btn btn-primary mb-3">Add Tag</button>
+		</div>
+	</form>
+</div>
+
+<hr />
+
+<div>
+	<a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">Back to Details</a>
+</div>
 
 @section Scripts {
 	@{

@@ -73,6 +73,8 @@ public class TaskItemController : Controller
             return this.NotFound();
         }
 
+        this.ViewBag.AvailableTags = await this.tagWebApiService.GetAllTagsAsync();
+
         return this.View(taskItem);
     }
 
@@ -189,7 +191,7 @@ public class TaskItemController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddTag(int taskId, TagWebApiModel tag)
+    public async Task<IActionResult> AddTag(int taskId, int tagId)
     {
         if (!this.ModelState.IsValid)
         {
@@ -202,7 +204,7 @@ public class TaskItemController : Controller
             return this.NotFound();
         }
 
-        _ = await this.tagWebApiService.AddTagToTaskAsync(taskId, tag);
+        _ = await this.tagWebApiService.AddTagToTaskAsync(taskId, tagId);
         return this.RedirectToAction(nameof(this.Details), new { id = taskId });
     }
 

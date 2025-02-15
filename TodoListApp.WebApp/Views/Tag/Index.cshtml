@@ -1,0 +1,29 @@
+@model IEnumerable<TodoListApp.WebApi.Models.ViewModels.TagIndexViewModel>
+
+@{
+	ViewData["Title"] = "All Tags";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Tag Name</th>
+			<th>Task Count</th>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>@item.Tag.Name</td>
+				<td>@item.TaskCount</td>
+				<td>
+					<a asp-action="TasksByTag" asp-route-tagId="@item.Tag.Id" class="btn btn-info">View Tasks</a>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
