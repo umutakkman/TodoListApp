@@ -10,6 +10,15 @@
 
 <form method="get" asp-action="Assigned" class="mb-4">
 	<input type="hidden" name="userId" value="@userId" />
+	<div class="row mb-3">
+		<div class="col-md-4">
+			<label for="searchString" class="form-label">Search Tasks</label>
+			<input type="text" name="searchString" id="searchString" class="form-control" value="@(Context.Request.Query["searchString"])" placeholder="Enter search term..." />
+		</div>
+		<div class="col-md-2 align-self-end">
+			<button type="submit" class="btn btn-primary">Search</button>
+		</div>
+	</div>
 	<div class="row">
 		<div class="col-md-4">
 			<label for="status" class="form-label">Filter by Status</label>
