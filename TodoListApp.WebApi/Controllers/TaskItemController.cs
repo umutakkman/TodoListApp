@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using TodoListApp.Common;
+using Microsoft.EntityFrameworkCore;
 using TodoListApp.Services.Interfaces;
 using TodoListApp.WebApi.Models.Models;
+using TodoListApp.WebApi.Models.ViewModels;
+using TaskStatus = TodoListApp.Common.TaskStatus;
 
 namespace TodoListApp.WebApi.Controllers;
 
@@ -75,43 +77,37 @@ public class TaskItemController : ControllerBase
     }
 
     [HttpGet("assigned/{currentUserId:int}")]
-    public ActionResult<IEnumerable<TaskItem>> GetAssignedTasks(
-        int currentUserId,
-        [FromQuery] string? status = null,
-        [FromQuery] string? sortBy = "name",
-        [FromQuery] string? sortOrder = "asc")
+    public async Task<IActionResult> GetAssignedTasks(int userId)
     {
-        var query = this.taskItemDatabaseService.TaskItems.Where(x => x.UserId == currentUserId);
+        var tasks = await this.taskItemDatabaseService.TaskItems
+            .Where(x => x.UserId == userId)
+            .ToListAsync();
 
-        if (string.IsNullOrEmpty(status) || status.ToUpperInvariant().Equals("ACTIVE", StringComparison.Ordinal))
-        {
-            query = query.Where(x => !x.Status.IsCompleted());
-        }
-
-        query = sortBy?.ToUpperInvariant() switch
-        {
-            "duedate" => sortOrder?.ToUpperInvariant() == "desc"
-                            ? query.OrderByDescending(t => t.DueDate)
-                            : query.OrderBy(t => t.DueDate),
-            "name" or _ => sortOrder?.ToUpperInvariant() == "desc"
-                            ? query.OrderByDescending(t => t.Title)
-                            : query.OrderBy(t => t.Title)
-        };
-
-        var tasks = query.ToList();
         return this.Ok(tasks);
     }
 
-    [HttpPut("{id:int}/status")]
-    public IActionResult UpdateTaskStatus(int id, [FromBody] Common.TaskStatus status)
+    [HttpPut("status/{id:int}")]
+    public IActionResult UpdateTaskStatus(int id, [FromBody] ChangeStatusViewModel model)
     {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest(this.ModelState);
+        }
+
+        ArgumentNullException.ThrowIfNull(model);
+
+        if (model.Id != id)
+        {
+            return this.BadRequest("ID mismatch.");
+        }
+
         var existing = this.taskItemDatabaseService.TaskItems.FirstOrDefault(x => x.Id == id);
         if (existing == null)
         {
             return this.NotFound();
         }
 
-        existing.Status = status;
+        existing.Status = model.TaskStatus;
         this.taskItemDatabaseService.UpdateTaskItem(existing);
         return this.NoContent();
     }

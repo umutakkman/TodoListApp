@@ -1,0 +1,71 @@
+@model IEnumerable<TodoListApp.WebApi.Models.ApiModels.TaskItemWebApiModel>
+@using TaskStatus = TodoListApp.Common.TaskStatus;
+
+@{
+	ViewData["Title"] = "Assigned Tasks";
+	var userId = ViewBag.UserId;
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form method="get" asp-action="Assigned" class="mb-4">
+	<input type="hidden" name="userId" value="@userId" />
+	<div class="row">
+		<div class="col-md-4">
+			<label for="status" class="form-label">Filter by Status</label>
+			<select name="status" id="status" class="form-select" onchange="this.form.submit()">
+				<option value="">All</option>
+				<option value="NotStarted" selected="@(Context.Request.Query["status"] == "NotStarted" ? "selected" : null)">Not Started</option>
+				<option value="InProgress" selected="@(Context.Request.Query["status"] == "InProgress" ? "selected" : null)">In Progress</option>
+				<option value="Completed" selected="@(Context.Request.Query["status"] == "Completed" ? "selected" : null)">Completed</option>
+			</select>
+		</div>
+		<div class="col-md-4">
+			<label for="sortBy" class="form-label">Sort By</label>
+			<select name="sortBy" id="sortBy" class="form-select" onchange="this.form.submit()">
+				<option value="name" selected="@(Context.Request.Query["sortBy"] == "name" ? "selected" : null)">Task Name</option>
+				<option value="duedate" selected="@(Context.Request.Query["sortBy"] == "duedate" ? "selected" : null)">Due Date</option>
+			</select>
+		</div>
+		<div class="col-md-4">
+			<label for="sortOrder" class="form-label">Sort Order</label>
+			<select name="sortOrder" id="sortOrder" class="form-select" onchange="this.form.submit()">
+				<option value="asc" selected="@(Context.Request.Query["sortOrder"] == "asc" ? "selected" : null)">Ascending</option>
+				<option value="desc" selected="@(Context.Request.Query["sortOrder"] == "desc" ? "selected" : null)">Descending</option>
+			</select>
+		</div>
+	</div>
+</form>
+
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Title</th>
+			<th>Due Date</th>
+			<th>Status</th>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var task in Model)
+		{
+			<tr class="@(task.DueDate < DateTime.Now ? "table-danger" : "")">
+				<td>@task.Title</td>
+				<td>@task.DueDate.ToString("yyyy-MM-dd HH:mm")</td>
+				<td>
+					<form asp-action="Assigned" method="post" class="d-inline">
+						<input type="hidden" name="id" value="@task.Id" />
+						<select name="status" class="form-select" onchange="this.form.submit()">
+							<option value="NotStarted" selected="@(task.Status == TaskStatus.NotStarted ? "selected" : null)">Not Started</option>
+							<option value="InProgress" selected="@(task.Status == TaskStatus.InProgress ? "selected" : null)">In Progress</option>
+							<option value="Completed" selected="@(task.Status == TaskStatus.Completed ? "selected" : null)">Completed</option>
+						</select>
+					</form>
+				</td>
+				<td>
+					<a asp-action="Details" asp-route-id="@task.Id" class="btn btn-info">Details</a>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

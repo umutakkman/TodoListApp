@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Services.Interfaces;
 using TodoListApp.WebApi.Models.ApiModels;
+using TaskStatus = TodoListApp.Common.TaskStatus;
 
 namespace TodoListApp.WebApp.Controllers;
 public class TaskItemController : Controller
@@ -119,5 +120,53 @@ public class TaskItemController : Controller
         var todoListId = taskItem.TodoListId;
         await this.taskItemWebApiService.DeleteTaskItemAsync(id);
         return this.RedirectToAction("Details", "TodoList", new { id = todoListId });
+    }
+
+    public async Task<IActionResult> Assigned(int userId, string? status = null, string? sortBy = "name", string? sortOrder = "asc", string? searchString = null)
+    {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest(this.ModelState);
+        }
+
+        this.ViewBag.UserId = userId;
+
+        var tasks = await this.taskItemWebApiService.GetAssignedTasksAsync(userId);
+
+        if (!string.IsNullOrEmpty(status))
+        {
+            tasks = tasks.Where(t => t.Status.ToString().Equals(status, StringComparison.OrdinalIgnoreCase));
+        }
+
+        tasks = sortBy switch
+        {
+            "duedate" => sortOrder == "desc" ? tasks.OrderByDescending(t => t.DueDate) : tasks.OrderBy(t => t.DueDate),
+            _ => sortOrder == "desc" ? tasks.OrderByDescending(t => t.Title) : tasks.OrderBy(t => t.Title),
+        };
+
+        if (!string.IsNullOrEmpty(searchString))
+        {
+            tasks = tasks.Where(t => t.Title.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+
+        return this.View(tasks);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Assigned(int id, TaskStatus status)
+    {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest(this.ModelState);
+        }
+
+        var updatedTask = await this.taskItemWebApiService.UpdateTaskStatusAsync(id, status);
+        if (updatedTask == null)
+        {
+            return this.NotFound();
+        }
+
+        return this.RedirectToAction("Assigned", new { userId = updatedTask.UserId });
     }
 }

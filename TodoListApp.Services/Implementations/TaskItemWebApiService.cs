@@ -1,6 +1,8 @@
 using System.Net.Http.Json;
 using TodoListApp.Services.Interfaces;
 using TodoListApp.WebApi.Models.ApiModels;
+using TodoListApp.WebApi.Models.ViewModels;
+using TaskStatus = TodoListApp.Common.TaskStatus;
 
 namespace TodoListApp.Services.Implementations;
 public class TaskItemWebApiService : ITaskItemWebApiService
@@ -23,11 +25,8 @@ public class TaskItemWebApiService : ITaskItemWebApiService
     public async Task<TaskItemWebApiModel> CreateTaskItemAsync(TaskItemWebApiModel taskItem)
     {
         var response = await this.httpClient.PostAsJsonAsync("api/TaskItem", taskItem);
-        if (!response.IsSuccessStatusCode)
-        {
-            var errorContent = await response.Content.ReadAsStringAsync();
-            throw new Exception($"CreateTaskItem failed with status code {response.StatusCode}: {errorContent}");
-        }
+
+        response.EnsureSuccessStatusCode();
 
         var createdtaskItem = await response.Content.ReadFromJsonAsync<TaskItemWebApiModel>();
         ArgumentNullException.ThrowIfNull(createdtaskItem);
@@ -49,16 +48,28 @@ public class TaskItemWebApiService : ITaskItemWebApiService
         return updatedtaskItem;
     }
 
-    public async Task<TaskItemWebApiModel> GetAssignedTasksAsync(int userId)
+    public async Task<IEnumerable<TaskItemWebApiModel>> GetAssignedTasksAsync(int userId)
     {
-        var response = await this.httpClient.GetFromJsonAsync<TaskItemWebApiModel>($"api/TaskItem/Assigned/{userId}");
+        var response = await this.httpClient.GetFromJsonAsync<IEnumerable<TaskItemWebApiModel>>($"api/TaskItem/assigned/{userId}");
         ArgumentNullException.ThrowIfNull(response);
         return response;
     }
 
     public async Task<TaskItemWebApiModel> UpdateTaskStatusAsync(int id, TaskStatus status)
     {
-        var response = await this.httpClient.PutAsJsonAsync($"api/TaskItem/Status/{id}", status);
+        var model = new ChangeStatusViewModel
+        {
+            Id = id,
+            TaskStatus = status,
+        };
+
+        var response = await this.httpClient.PutAsJsonAsync($"api/TaskItem/status/{id}", model);
+
+        if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+        {
+            return await this.GetTaskItemAsync(id);
+        }
+
         response.EnsureSuccessStatusCode();
         var updatedTask = await response.Content.ReadFromJsonAsync<TaskItemWebApiModel>();
         ArgumentNullException.ThrowIfNull(updatedTask);
