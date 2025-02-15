@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoListApp.Services.Interfaces;
+using TodoListApp.WebApi.Models.ApiModels;
 using TodoListApp.WebApi.Models.Models;
 using TodoListApp.WebApi.Models.ViewModels;
-using TaskStatus = TodoListApp.Common.TaskStatus;
 
 namespace TodoListApp.WebApi.Controllers;
 
@@ -76,7 +76,7 @@ public class TaskItemController : ControllerBase
         return this.NoContent();
     }
 
-    [HttpGet("assigned/{currentUserId:int}")]
+    [HttpGet("assigned/{userId:int}")]
     public async Task<IActionResult> GetAssignedTasks(int userId)
     {
         var tasks = await this.taskItemDatabaseService.TaskItems
@@ -109,6 +109,76 @@ public class TaskItemController : ControllerBase
 
         existing.Status = model.TaskStatus;
         this.taskItemDatabaseService.UpdateTaskItem(existing);
+        return this.NoContent();
+    }
+
+    [HttpGet("{taskId:int}/tags")]
+    public async Task<IActionResult> GetTagsForTask(int taskId)
+    {
+        var task = await this.taskItemDatabaseService.TaskItems
+            .Include(t => t.Tags)
+            .FirstOrDefaultAsync(t => t.Id == taskId);
+
+        if (task == null)
+        {
+            return this.NotFound();
+        }
+
+        return this.Ok(task.Tags);
+    }
+
+    [HttpGet("bytag/{tagId:int}")]
+    public async Task<IActionResult> GetTasksByTag(int tagId)
+    {
+        var tasks = await this.taskItemDatabaseService.TaskItems
+                      .Where(t => t.Tags.Any(tag => tag.Id == tagId))
+                      .ToListAsync();
+        return this.Ok(tasks);
+    }
+
+    [HttpPost("{taskId:int}/tags")]
+    public async Task<IActionResult> AddTagToTask(int taskId, [FromBody] TagWebApiModel tag)
+    {
+        var task = await this.taskItemDatabaseService.TaskItems
+            .Include(t => t.Tags)
+            .FirstOrDefaultAsync(t => t.Id == taskId);
+
+        if (task == null)
+        {
+            return this.NotFound();
+        }
+
+        ArgumentNullException.ThrowIfNull(tag);
+
+        task.Tags.Add(new Tag
+        {
+            Name = tag.Name,
+        });
+
+        this.taskItemDatabaseService.UpdateTaskItem(task);
+        return this.Ok(task.Tags);
+    }
+
+    [HttpDelete("{taskId:int}/tag/{tagId:int}")]
+    public async Task<IActionResult> RemoveTagFromTask(int taskId, int tagId)
+    {
+        var task = await this.taskItemDatabaseService.TaskItems
+            .Include(t => t.Tags)
+            .FirstOrDefaultAsync(t => t.Id == taskId);
+
+        if (task == null)
+        {
+            return this.NotFound();
+        }
+
+        var tagToRemove = task.Tags.FirstOrDefault(t => t.Id == tagId);
+        if (tagToRemove == null)
+        {
+            return this.NotFound();
+        }
+
+        task.Tags.Remove(tagToRemove);
+        this.taskItemDatabaseService.UpdateTaskItem(task);
         return this.NoContent();
     }
 }

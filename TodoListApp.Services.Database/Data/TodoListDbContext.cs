@@ -15,9 +15,9 @@ public class TodoListDbContext : DbContext
 
     public DbSet<TaskItem> TaskItems { get; set; } = null!;
 
-    public DbSet<UserEntity> Users { get; set; } = null!;
+    public DbSet<User> Users { get; set; } = null!;
 
-    public DbSet<CommentEntity> Comments { get; set; } = null!;
+    public DbSet<Comment> Comments { get; set; } = null!;
 
-    public DbSet<TagEntity> Tags { get; set; } = null!;
+    public DbSet<Tag> Tags { get; set; } = null!;
 }

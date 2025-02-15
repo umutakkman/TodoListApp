@@ -75,4 +75,11 @@ public class TaskItemWebApiService : ITaskItemWebApiService
         ArgumentNullException.ThrowIfNull(updatedTask);
         return updatedTask;
     }
+
+    public async Task<IEnumerable<TagWebApiModel>> GetTagsForTaskAsync(int taskId)
+    {
+        var response = await this.httpClient.GetFromJsonAsync<IEnumerable<TagWebApiModel>>($"api/taskItem/{taskId}/tags");
+        ArgumentNullException.ThrowIfNull(response);
+        return response;
+    }
 }
