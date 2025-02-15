@@ -5,5 +5,5 @@ public class TagWebApiModel
 
     public string Name { get; set; } = null!;
 
-    public ICollection<TaskItemWebApiModel>? TaskItems { get; set; } = new List<TaskItemWebApiModel>();
+    public ICollection<TaskItemWebApiModel>? TaskItems { get; } = new List<TaskItemWebApiModel>();
 }

@@ -1,7 +1,7 @@
-using TodoListApp.WebApi.Models.Models;
+using TodoListApp.WebApi.Models.Entities;
 
 namespace TodoListApp.Services.Interfaces;
 public interface ITagDatabaseService
 {
-    IQueryable<Tag> Tags { get; }
+    IQueryable<TagEntity> Tags { get; }
 }

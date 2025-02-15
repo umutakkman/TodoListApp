@@ -32,7 +32,7 @@ public class TaskItemEntity
     [ForeignKey(nameof(TodoListId))]
     public TodoListEntity? TodoList { get; set; }
 
-    public virtual ICollection<TagEntity>? Tags { get; } = new List<TagEntity>();
+    public virtual ICollection<TagEntity>? Tags { get; set; } = new List<TagEntity>();
 
     public virtual ICollection<CommentEntity>? Comments { get; } = new List<CommentEntity>();
 }

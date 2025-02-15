@@ -1,7 +1,6 @@
-using Microsoft.EntityFrameworkCore;
 using TodoListApp.Services.Database.Data;
 using TodoListApp.Services.Interfaces;
-using TodoListApp.WebApi.Models.Models;
+using TodoListApp.WebApi.Models.Entities;
 
 namespace TodoListApp.Services.Implementations;
 public class TodoListDatabaseService : ITodoListDatabaseService
@@ -13,41 +12,41 @@ public class TodoListDatabaseService : ITodoListDatabaseService
         this.context = context;
     }
 
-    public IQueryable<TodoList> TodoLists => this.context.TodoLists;
+    public IQueryable<TodoListEntity> TodoLists => this.context.TodoList;
 
-    public void CreateTodoList(TodoList todoList)
+    public void CreateTodoList(TodoListEntity todoList)
     {
         ArgumentNullException.ThrowIfNull(todoList);
 
-        this.context.Add(todoList);
-        this.context.SaveChanges();
+        _ = this.context.Add(todoList);
+        _ = this.context.SaveChanges();
     }
 
-    public void UpdateTodoList(TodoList todoList)
+    public void UpdateTodoList(TodoListEntity todoList)
     {
         ArgumentNullException.ThrowIfNull(todoList);
 
-        var existing = this.context.TodoLists.FirstOrDefault(x => x.Id == todoList.Id);
+        var existing = this.context.TodoList.FirstOrDefault(x => x.Id == todoList.Id);
         if (existing == null)
         {
             throw new InvalidOperationException("Task item not found");
         }
 
         this.context.Entry(existing).CurrentValues.SetValues(todoList);
-        this.context.SaveChanges();
+        _ = this.context.SaveChanges();
     }
 
-    public void DeleteTodoList(TodoList todoList)
+    public void DeleteTodoList(TodoListEntity todoList)
     {
         ArgumentNullException.ThrowIfNull(todoList);
 
-        var existing = this.context.TodoLists.FirstOrDefault(x => x.Id == todoList.Id);
+        var existing = this.context.TodoList.FirstOrDefault(x => x.Id == todoList.Id);
         if (existing == null)
         {
             throw new InvalidOperationException("Task item not found");
         }
 
-        this.context.Remove(todoList);
-        this.context.SaveChanges();
+        _ = this.context.Remove(todoList);
+        _ = this.context.SaveChanges();
     }
 }

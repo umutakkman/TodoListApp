@@ -1,5 +1,8 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace TodoListApp.WebApi.Models.Models;
 
+[NotMapped]
 public class Comment
 {
     public int Id { get; set; }

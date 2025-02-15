@@ -21,5 +21,5 @@ public class TaskItemWebApiModel
 
     public ICollection<TagWebApiModel>? Tags { get; set; } = new List<TagWebApiModel>();
 
-    public ICollection<CommentWebApiModel>? Comments { get; set; } = new List<CommentWebApiModel>();
+    public ICollection<CommentWebApiModel>? Comments { get; } = new List<CommentWebApiModel>();
 }

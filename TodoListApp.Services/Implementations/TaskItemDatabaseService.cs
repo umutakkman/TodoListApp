@@ -1,6 +1,6 @@
 using TodoListApp.Services.Database.Data;
 using TodoListApp.Services.Interfaces;
-using TodoListApp.WebApi.Models.Models;
+using TodoListApp.WebApi.Models.Entities;
 
 namespace TodoListApp.Services.Implementations;
 public class TaskItemDatabaseService : ITaskItemDatabaseService
@@ -12,41 +12,41 @@ public class TaskItemDatabaseService : ITaskItemDatabaseService
         this.context = context;
     }
 
-    public IQueryable<TaskItem> TaskItems => this.context.TaskItems;
+    public IQueryable<TaskItemEntity> TaskItems => this.context.TaskItem;
 
-    public void CreateTaskItem(TaskItem taskItem)
+    public void CreateTaskItem(TaskItemEntity taskItem)
     {
         ArgumentNullException.ThrowIfNull(taskItem);
 
-        this.context.Add(taskItem);
-        this.context.SaveChanges();
+        _ = this.context.Add(taskItem);
+        _ = this.context.SaveChanges();
     }
 
-    public void UpdateTaskItem(TaskItem taskItem)
+    public void UpdateTaskItem(TaskItemEntity taskItem)
     {
         ArgumentNullException.ThrowIfNull(taskItem);
 
-        var existing = this.context.TaskItems.FirstOrDefault(x => x.Id == taskItem.Id);
+        var existing = this.context.TaskItem.FirstOrDefault(x => x.Id == taskItem.Id);
         if (existing == null)
         {
             throw new InvalidOperationException("Task item not found");
         }
 
         this.context.Entry(existing).CurrentValues.SetValues(taskItem);
-        this.context.SaveChanges();
+        _ = this.context.SaveChanges();
     }
 
-    public void DeleteTaskItem(TaskItem taskItem)
+    public void DeleteTaskItem(TaskItemEntity taskItem)
     {
         ArgumentNullException.ThrowIfNull(taskItem);
 
-        var existing = this.context.TaskItems.FirstOrDefault(x => x.Id == taskItem.Id);
+        var existing = this.context.TaskItem.FirstOrDefault(x => x.Id == taskItem.Id);
         if (existing == null)
         {
             throw new InvalidOperationException("Task item not found");
         }
 
-        this.context.Remove(taskItem);
-        this.context.SaveChanges();
+        _ = this.context.Remove(taskItem);
+        _ = this.context.SaveChanges();
     }
 }

@@ -25,14 +25,7 @@ public class TodoListController : Controller
             return this.BadRequest(this.ModelState);
         }
 
-        var todoList = await this.todoListWebApiService.GetTodoListAsync(id);
-
-        if (todoList == null)
-        {
-            return this.NotFound();
-        }
-
-        return this.View(todoList);
+        return await this.GetTodoListViewById(id);
     }
 
     public IActionResult Create()
@@ -42,7 +35,7 @@ public class TodoListController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,Title,Description")] TodoListWebApiModel todoList)
+    public async Task<IActionResult> Create(TodoListWebApiModel todoList)
     {
         if (!this.ModelState.IsValid)
         {
@@ -60,24 +53,21 @@ public class TodoListController : Controller
             return this.BadRequest(this.ModelState);
         }
 
-        var todoList = await this.todoListWebApiService.GetTodoListAsync(id);
-        if (todoList == null)
-        {
-            return this.NotFound();
-        }
-
-        return this.View(todoList);
+        return await this.GetTodoListViewById(id);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description")] TodoListWebApiModel todoList)
+    public async Task<IActionResult> Edit(int id, TodoListWebApiModel todoList)
     {
-        ArgumentNullException.ThrowIfNull(todoList);
+        if (todoList == null)
+        {
+            return this.BadRequest("Invalid todo list data.");
+        }
 
         if (id != todoList.Id)
         {
-            return this.BadRequest();
+            return this.BadRequest("ID mismatch.");
         }
 
         if (!this.ModelState.IsValid)
@@ -96,13 +86,7 @@ public class TodoListController : Controller
             return this.BadRequest(this.ModelState);
         }
 
-        var todoList = await this.todoListWebApiService.GetTodoListAsync(id);
-        if (todoList == null)
-        {
-            return this.NotFound();
-        }
-
-        return this.View(todoList);
+        return await this.GetTodoListViewById(id);
     }
 
     [HttpPost, ActionName("Delete")]
@@ -116,5 +100,16 @@ public class TodoListController : Controller
 
         await this.todoListWebApiService.DeleteTodoListAsync(id);
         return this.RedirectToAction(nameof(this.Index));
+    }
+
+    private async Task<IActionResult> GetTodoListViewById(int id)
+    {
+        var todoList = await this.todoListWebApiService.GetTodoListAsync(id);
+        if (todoList == null)
+        {
+            return this.NotFound();
+        }
+
+        return this.View(todoList);
     }
 }

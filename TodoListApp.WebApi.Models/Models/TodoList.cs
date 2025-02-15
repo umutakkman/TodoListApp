@@ -1,5 +1,8 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace TodoListApp.WebApi.Models.Models
 {
+    [NotMapped]
     public class TodoList
     {
         public int Id { get; set; }
@@ -8,6 +11,6 @@ namespace TodoListApp.WebApi.Models.Models
 
         public string? Description { get; set; }
 
-        public ICollection<TaskItem>? TaskItems { get; set; } = new List<TaskItem>();
+        public ICollection<TaskItem>? TaskItems { get; } = new List<TaskItem>();
     }
 }

@@ -1,14 +1,14 @@
-using TodoListApp.WebApi.Models.Models;
+using TodoListApp.WebApi.Models.Entities;
 
 namespace TodoListApp.Services.Interfaces;
 
 public interface ITodoListDatabaseService
 {
-    IQueryable<TodoList> TodoLists { get; }
+    IQueryable<TodoListEntity> TodoLists { get; }
 
-    void CreateTodoList(TodoList todoList);
+    void CreateTodoList(TodoListEntity todoList);
 
-    void UpdateTodoList(TodoList todoList);
+    void UpdateTodoList(TodoListEntity todoList);
 
-    void DeleteTodoList(TodoList todoList);
+    void DeleteTodoList(TodoListEntity todoList);
 }

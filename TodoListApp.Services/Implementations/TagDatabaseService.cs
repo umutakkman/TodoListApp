@@ -1,6 +1,6 @@
 using TodoListApp.Services.Database.Data;
 using TodoListApp.Services.Interfaces;
-using TodoListApp.WebApi.Models.Models;
+using TodoListApp.WebApi.Models.Entities;
 
 namespace TodoListApp.Services.Implementations;
 public class TagDatabaseService : ITagDatabaseService
@@ -12,5 +12,5 @@ public class TagDatabaseService : ITagDatabaseService
         this.context = context;
     }
 
-    public IQueryable<Tag> Tags => this.context.Tags;
+    public IQueryable<TagEntity> Tags => this.context.Tag;
 }

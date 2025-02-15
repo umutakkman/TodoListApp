@@ -26,7 +26,7 @@ public class TaskItemWebApiService : ITaskItemWebApiService
     {
         var response = await this.httpClient.PostAsJsonAsync("api/TaskItem", taskItem);
 
-        response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
 
         var createdtaskItem = await response.Content.ReadFromJsonAsync<TaskItemWebApiModel>();
         ArgumentNullException.ThrowIfNull(createdtaskItem);
@@ -35,14 +35,15 @@ public class TaskItemWebApiService : ITaskItemWebApiService
 
     public async Task DeleteTaskItemAsync(int id)
     {
-        var response = await this.httpClient.DeleteAsync($"api/TaskItem/{id}");
-        response.EnsureSuccessStatusCode();
+        var uri = new Uri($"api/TaskItem/{id}", UriKind.Relative);
+        var response = await this.httpClient.DeleteAsync(uri);
+        _ = response.EnsureSuccessStatusCode();
     }
 
     public async Task<TaskItemWebApiModel> UpdateTaskItemAsync(int id, TaskItemWebApiModel taskItem)
     {
         var response = await this.httpClient.PutAsJsonAsync($"api/TaskItem/{id}", taskItem);
-        response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
         var updatedtaskItem = await response.Content.ReadFromJsonAsync<TaskItemWebApiModel>();
         ArgumentNullException.ThrowIfNull(updatedtaskItem);
         return updatedtaskItem;
@@ -70,7 +71,7 @@ public class TaskItemWebApiService : ITaskItemWebApiService
             return await this.GetTaskItemAsync(id);
         }
 
-        response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
         var updatedTask = await response.Content.ReadFromJsonAsync<TaskItemWebApiModel>();
         ArgumentNullException.ThrowIfNull(updatedTask);
         return updatedTask;

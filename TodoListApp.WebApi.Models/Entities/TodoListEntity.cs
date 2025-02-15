@@ -14,5 +14,5 @@ public class TodoListEntity
     [StringLength(500, ErrorMessage = "The description cannot be longer than 500 characters.")]
     public string Description { get; set; } = string.Empty;
 
-    public virtual ICollection<TaskItemEntity>? TaskItems { get; set; } = new List<TaskItemEntity>();
+    public virtual ICollection<TaskItemEntity>? TaskItems { get; } = new List<TaskItemEntity>();
 }

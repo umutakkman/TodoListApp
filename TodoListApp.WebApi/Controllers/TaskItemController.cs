@@ -2,183 +2,256 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoListApp.Services.Interfaces;
 using TodoListApp.WebApi.Models.ApiModels;
-using TodoListApp.WebApi.Models.Models;
+using TodoListApp.WebApi.Models.Entities;
 using TodoListApp.WebApi.Models.ViewModels;
 
-namespace TodoListApp.WebApi.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class TaskItemController : ControllerBase
+namespace TodoListApp.WebApi.Controllers
 {
-    private readonly ITaskItemDatabaseService taskItemDatabaseService;
-
-    public TaskItemController(ITaskItemDatabaseService taskItemDatabaseService)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class TaskItemController : ControllerBase
     {
-        this.taskItemDatabaseService = taskItemDatabaseService;
-    }
+        private readonly ITaskItemDatabaseService taskItemDatabaseService;
 
-    [HttpGet("{id:int}")]
-    public ActionResult<TaskItem> GetTaskItemById(int id)
-    {
-        var item = this.taskItemDatabaseService.TaskItems.FirstOrDefault(x => x.Id == id);
-        if (item == null)
+        public TaskItemController(ITaskItemDatabaseService taskItemDatabaseService)
         {
-            return this.NotFound();
+            this.taskItemDatabaseService = taskItemDatabaseService;
         }
 
-        return this.Ok(item);
-    }
-
-    [HttpPost]
-    public ActionResult<TaskItem> CreateTaskItem([FromBody] TaskItem taskItem)
-    {
-        if (taskItem == null)
+        [HttpGet("{id:int}")]
+        public ActionResult<TaskItemWebApiModel> GetTaskItemById(int id)
         {
-            return this.BadRequest("Invalid task item data.");
+            var entity = this.taskItemDatabaseService.TaskItems.FirstOrDefault(x => x.Id == id);
+            if (entity == null)
+            {
+                return this.NotFound();
+            }
+
+            var dto = MapEntityToDto(entity);
+            return this.Ok(dto);
         }
 
-        this.taskItemDatabaseService.CreateTaskItem(taskItem);
-        return this.CreatedAtAction(nameof(this.GetTaskItemById), new { id = taskItem.Id }, taskItem);
-    }
-
-    [HttpPut("{id:int}")]
-    public IActionResult UpdateTaskItem(int id, [FromBody] TaskItem taskItem)
-    {
-        ArgumentNullException.ThrowIfNull(taskItem);
-        if (id != taskItem.Id)
+        [HttpPost]
+        public ActionResult<TaskItemWebApiModel> CreateTaskItem([FromBody] TaskItemWebApiModel dto)
         {
-            return this.BadRequest("ID mismatch.");
+            if (dto == null)
+            {
+                return this.BadRequest("Invalid task item data.");
+            }
+
+            var entity = MapDtoToEntity(dto);
+            this.taskItemDatabaseService.CreateTaskItem(entity);
+            var createdDto = MapEntityToDto(entity);
+            return this.CreatedAtAction(nameof(this.GetTaskItemById), new { id = createdDto.Id }, createdDto);
         }
 
-        var existing = this.taskItemDatabaseService.TaskItems.FirstOrDefault(x => x.Id == id);
-        if (existing == null)
+        [ProducesResponseType(typeof(TaskItemWebApiModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpPut("{id:int}")]
+        public IActionResult UpdateTaskItem(int id, [FromBody] TaskItemWebApiModel dto)
         {
-            return this.NotFound();
+            if (dto == null)
+            {
+                return this.BadRequest("Invalid task item data.");
+            }
+
+            if (id != dto.Id)
+            {
+                return this.BadRequest("ID mismatch.");
+            }
+
+            var existing = this.taskItemDatabaseService.TaskItems.FirstOrDefault(x => x.Id == id);
+            if (existing == null)
+            {
+                return this.NotFound();
+            }
+
+            existing.Title = dto.Title;
+            existing.Description = dto.Description;
+            existing.DueDate = dto.DueDate;
+            existing.Status = dto.Status;
+
+            this.taskItemDatabaseService.UpdateTaskItem(existing);
+
+            var updatedEntity = this.taskItemDatabaseService.TaskItems.FirstOrDefault(x => x.Id == id);
+            if (updatedEntity == null)
+            {
+                return this.NotFound();
+            }
+
+            var updatedDto = MapEntityToDto(updatedEntity);
+            return this.Ok(updatedDto);
         }
 
-        this.taskItemDatabaseService.UpdateTaskItem(taskItem);
-
-        var updatedEntity = this.taskItemDatabaseService.TaskItems.FirstOrDefault(x => x.Id == id);
-        return this.Ok(updatedEntity);
-    }
-
-    [HttpDelete("{id:int}")]
-    public IActionResult DeleteTaskItem(int id)
-    {
-        var existing = this.taskItemDatabaseService.TaskItems.FirstOrDefault(x => x.Id == id);
-        if (existing == null)
+        [HttpDelete("{id:int}")]
+        public IActionResult DeleteTaskItem(int id)
         {
-            return this.NotFound();
+            var existing = this.taskItemDatabaseService.TaskItems.FirstOrDefault(x => x.Id == id);
+            if (existing == null)
+            {
+                return this.NotFound();
+            }
+
+            this.taskItemDatabaseService.DeleteTaskItem(existing);
+            return this.NoContent();
         }
 
-        this.taskItemDatabaseService.DeleteTaskItem(existing);
-        return this.NoContent();
-    }
-
-    [HttpGet("assigned/{userId:int}")]
-    public async Task<IActionResult> GetAssignedTasks(int userId)
-    {
-        var tasks = await this.taskItemDatabaseService.TaskItems
-            .Where(x => x.UserId == userId)
-            .ToListAsync();
-
-        return this.Ok(tasks);
-    }
-
-    [HttpPut("status/{id:int}")]
-    public IActionResult UpdateTaskStatus(int id, [FromBody] ChangeStatusViewModel model)
-    {
-        if (!this.ModelState.IsValid)
+        [HttpGet("assigned/{userId:int}")]
+        public ActionResult<IEnumerable<TaskItemWebApiModel>> GetAssignedTasks(int userId)
         {
-            return this.BadRequest(this.ModelState);
+            var entities = this.taskItemDatabaseService.TaskItems.Where(x => x.UserId == userId).ToList();
+            var dtos = entities.Select(MapEntityToDto);
+            return this.Ok(dtos);
         }
 
-        ArgumentNullException.ThrowIfNull(model);
-
-        if (model.Id != id)
+        [HttpPut("status/{id:int}")]
+        public IActionResult UpdateTaskStatus(int id, [FromBody] ChangeStatusViewModel model)
         {
-            return this.BadRequest("ID mismatch.");
+            if (!this.ModelState.IsValid)
+            {
+                return this.BadRequest(this.ModelState);
+            }
+
+            ArgumentNullException.ThrowIfNull(model);
+
+            if (model.Id != id)
+            {
+                return this.BadRequest("ID mismatch.");
+            }
+
+            var existing = this.taskItemDatabaseService.TaskItems.FirstOrDefault(x => x.Id == id);
+            if (existing == null)
+            {
+                return this.NotFound();
+            }
+
+            existing.Status = model.TaskStatus;
+            this.taskItemDatabaseService.UpdateTaskItem(existing);
+            return this.NoContent();
         }
 
-        var existing = this.taskItemDatabaseService.TaskItems.FirstOrDefault(x => x.Id == id);
-        if (existing == null)
+        [ProducesResponseType(typeof(IEnumerable<TagWebApiModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpGet("{taskId:int}/tags")]
+        public IActionResult GetTagsForTask(int taskId)
         {
-            return this.NotFound();
+            var task = this.taskItemDatabaseService.TaskItems
+                        .Include(t => t.Tags)
+                        .FirstOrDefault(t => t.Id == taskId);
+            if (task == null)
+            {
+                return this.NotFound();
+            }
+
+            var tagDtos = task.Tags?.Select(t => new TagWebApiModel { Id = t.Id, Name = t.Name }) ?? Enumerable.Empty<TagWebApiModel>();
+            return this.Ok(tagDtos);
         }
 
-        existing.Status = model.TaskStatus;
-        this.taskItemDatabaseService.UpdateTaskItem(existing);
-        return this.NoContent();
-    }
-
-    [HttpGet("{taskId:int}/tags")]
-    public async Task<IActionResult> GetTagsForTask(int taskId)
-    {
-        var task = await this.taskItemDatabaseService.TaskItems
-            .Include(t => t.Tags)
-            .FirstOrDefaultAsync(t => t.Id == taskId);
-
-        if (task == null)
+        [ProducesResponseType(typeof(IEnumerable<TaskItemWebApiModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpGet("bytag/{tagId:int}")]
+        public IActionResult GetTasksByTag(int tagId)
         {
-            return this.NotFound();
+            var entities = this.taskItemDatabaseService.TaskItems
+                            .Where(t => t.Tags != null && t.Tags.Any(tag => tag.Id == tagId))
+                            .ToList();
+            var dtos = entities.Select(MapEntityToDto);
+            return this.Ok(dtos);
         }
 
-        return this.Ok(task.Tags);
-    }
-
-    [HttpGet("bytag/{tagId:int}")]
-    public async Task<IActionResult> GetTasksByTag(int tagId)
-    {
-        var tasks = await this.taskItemDatabaseService.TaskItems
-                      .Where(t => t.Tags.Any(tag => tag.Id == tagId))
-                      .ToListAsync();
-        return this.Ok(tasks);
-    }
-
-    [HttpPost("{taskId:int}/tags")]
-    public async Task<IActionResult> AddTagToTask(int taskId, [FromBody] TagWebApiModel tag)
-    {
-        var task = await this.taskItemDatabaseService.TaskItems
-            .Include(t => t.Tags)
-            .FirstOrDefaultAsync(t => t.Id == taskId);
-
-        if (task == null)
+        [ProducesResponseType(typeof(IEnumerable<TagWebApiModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpPost("{taskId:int}/tags")]
+        public IActionResult AddTagToTask(int taskId, [FromBody] TagWebApiModel tagDto)
         {
-            return this.NotFound();
+            var task = this.taskItemDatabaseService.TaskItems
+                        .Include(t => t.Tags)
+                        .FirstOrDefault(t => t.Id == taskId);
+            if (task == null)
+            {
+                return this.NotFound();
+            }
+
+            if (tagDto == null)
+            {
+                return this.BadRequest("Invalid tag data.");
+            }
+
+            if (task.Tags == null)
+            {
+                task.Tags = new List<TagEntity>();
+            }
+
+            var newTag = new TagEntity
+            {
+                Name = tagDto.Name,
+            };
+            task.Tags.Add(newTag);
+            this.taskItemDatabaseService.UpdateTaskItem(task);
+            var tagDtos = task.Tags.Select(t => new TagWebApiModel { Id = t.Id, Name = t.Name });
+            return this.Ok(tagDtos);
         }
 
-        ArgumentNullException.ThrowIfNull(tag);
-
-        task.Tags.Add(new Tag
+        [HttpDelete("{taskId:int}/tag/{tagId:int}")]
+        public IActionResult RemoveTagFromTask(int taskId, int tagId)
         {
-            Name = tag.Name,
-        });
+            var task = this.taskItemDatabaseService.TaskItems
+                        .Include(t => t.Tags)
+                        .FirstOrDefault(t => t.Id == taskId);
+            if (task == null)
+            {
+                return this.NotFound();
+            }
 
-        this.taskItemDatabaseService.UpdateTaskItem(task);
-        return this.Ok(task.Tags);
-    }
+            if (task.Tags == null)
+            {
+                return this.NotFound();
+            }
 
-    [HttpDelete("{taskId:int}/tag/{tagId:int}")]
-    public async Task<IActionResult> RemoveTagFromTask(int taskId, int tagId)
-    {
-        var task = await this.taskItemDatabaseService.TaskItems
-            .Include(t => t.Tags)
-            .FirstOrDefaultAsync(t => t.Id == taskId);
+            var tagToRemove = task.Tags.FirstOrDefault(t => t.Id == tagId);
+            if (tagToRemove == null)
+            {
+                return this.NotFound();
+            }
 
-        if (task == null)
-        {
-            return this.NotFound();
+            _ = task.Tags.Remove(tagToRemove);
+            this.taskItemDatabaseService.UpdateTaskItem(task);
+            return this.NoContent();
         }
 
-        var tagToRemove = task.Tags.FirstOrDefault(t => t.Id == tagId);
-        if (tagToRemove == null)
+        private static TaskItemWebApiModel MapEntityToDto(TaskItemEntity entity)
         {
-            return this.NotFound();
+            return new TaskItemWebApiModel
+            {
+                Id = entity.Id,
+                Title = entity.Title,
+                Description = entity.Description,
+                CreationDate = entity.CreationDate,
+                DueDate = entity.DueDate,
+                Status = entity.Status,
+                UserId = entity.UserId,
+                TodoListId = entity.TodoListId,
+                Tags = entity.Tags?.Select(t => new TagWebApiModel
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                }).ToList() ?? new List<TagWebApiModel>(),
+            };
         }
 
-        task.Tags.Remove(tagToRemove);
-        this.taskItemDatabaseService.UpdateTaskItem(task);
-        return this.NoContent();
+        private static TaskItemEntity MapDtoToEntity(TaskItemWebApiModel dto)
+        {
+            return new TaskItemEntity
+            {
+                Title = dto.Title,
+                Description = dto.Description,
+                DueDate = dto.DueDate,
+                Status = dto.Status,
+                UserId = dto.UserId ?? 0,
+                TodoListId = dto.TodoListId,
+            };
+        }
     }
 }

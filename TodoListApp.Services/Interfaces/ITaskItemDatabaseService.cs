@@ -1,13 +1,13 @@
-using TodoListApp.WebApi.Models.Models;
+using TodoListApp.WebApi.Models.Entities;
 
 namespace TodoListApp.Services.Interfaces;
 public interface ITaskItemDatabaseService
 {
-    IQueryable<TaskItem> TaskItems { get; }
+    IQueryable<TaskItemEntity> TaskItems { get; }
 
-    void CreateTaskItem(TaskItem taskItem);
+    void CreateTaskItem(TaskItemEntity taskItem);
 
-    void UpdateTaskItem(TaskItem taskItem);
+    void UpdateTaskItem(TaskItemEntity taskItem);
 
-    void DeleteTaskItem(TaskItem taskItem);
+    void DeleteTaskItem(TaskItemEntity taskItem);
 }

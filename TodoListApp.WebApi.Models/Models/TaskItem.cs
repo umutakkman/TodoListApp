@@ -1,7 +1,9 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using TaskStatus = TodoListApp.Common.TaskStatus;
 
 namespace TodoListApp.WebApi.Models.Models
 {
+    [NotMapped]
     public class TaskItem
     {
         public int Id { get; set; }
@@ -24,8 +26,8 @@ namespace TodoListApp.WebApi.Models.Models
 
         public TodoList? TodoList { get; set; }
 
-        public ICollection<Tag>? Tags { get; set; } = new List<Tag>();
+        public ICollection<Tag>? Tags { get; } = new List<Tag>();
 
-        public ICollection<Comment>? Comments { get; set; } = new List<Comment>();
+        public ICollection<Comment>? Comments { get; } = new List<Comment>();
     }
 }

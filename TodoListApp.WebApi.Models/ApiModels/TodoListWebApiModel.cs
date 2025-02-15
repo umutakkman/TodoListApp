@@ -1,5 +1,3 @@
-using TodoListApp.WebApi.Models.Models;
-
 namespace TodoListApp.WebApi.Models.ApiModels;
 
 public class TodoListWebApiModel

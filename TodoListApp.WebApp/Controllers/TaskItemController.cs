@@ -1,16 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Services.Interfaces;
 using TodoListApp.WebApi.Models.ApiModels;
+using TodoListApp.WebApi.Models.ViewModels;
 using TaskStatus = TodoListApp.Common.TaskStatus;
 
 namespace TodoListApp.WebApp.Controllers;
 public class TaskItemController : Controller
 {
     private readonly ITaskItemWebApiService taskItemWebApiService;
+    private readonly ITagWebApiService tagWebApiService;
 
-    public TaskItemController(ITaskItemWebApiService taskItemWebApiService)
+    public TaskItemController(ITaskItemWebApiService taskItemWebApiService, ITagWebApiService tagWebApiService)
     {
         this.taskItemWebApiService = taskItemWebApiService;
+        this.tagWebApiService = tagWebApiService;
     }
 
     public async Task<IActionResult> Details(int id)
@@ -77,9 +80,15 @@ public class TaskItemController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, TaskItemWebApiModel taskItem)
     {
+        ArgumentNullException.ThrowIfNull(taskItem);
         if (!this.ModelState.IsValid)
         {
             return this.BadRequest(this.ModelState);
+        }
+
+        if (id != taskItem.Id)
+        {
+            return this.BadRequest("ID mismatch.");
         }
 
         var updatedTaskItem = await this.taskItemWebApiService.UpdateTaskItemAsync(id, taskItem);
@@ -129,8 +138,6 @@ public class TaskItemController : Controller
             return this.BadRequest(this.ModelState);
         }
 
-        this.ViewBag.UserId = userId;
-
         var tasks = await this.taskItemWebApiService.GetAssignedTasksAsync(userId);
 
         if (!string.IsNullOrEmpty(status))
@@ -149,7 +156,17 @@ public class TaskItemController : Controller
             tasks = tasks.Where(t => t.Title.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
         }
 
-        return this.View(tasks);
+        var viewModel = new AssignedTasksViewModel
+        {
+            UserId = userId,
+            Tasks = tasks,
+            SearchString = searchString,
+            Status = status,
+            SortBy = sortBy,
+            SortOrder = sortOrder,
+        };
+
+        return this.View(viewModel);
     }
 
     [HttpPost]
@@ -168,5 +185,43 @@ public class TaskItemController : Controller
         }
 
         return this.RedirectToAction("Assigned", new { userId = updatedTask.UserId });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddTag(int taskId, TagWebApiModel tag)
+    {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest(this.ModelState);
+        }
+
+        var taskItem = await this.taskItemWebApiService.GetTaskItemAsync(taskId);
+        if (taskItem == null)
+        {
+            return this.NotFound();
+        }
+
+        _ = await this.tagWebApiService.AddTagToTaskAsync(taskId, tag);
+        return this.RedirectToAction(nameof(this.Details), new { id = taskId });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemoveTag(int taskId, int tagId)
+    {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest(this.ModelState);
+        }
+
+        var taskItem = await this.taskItemWebApiService.GetTaskItemAsync(taskId);
+        if (taskItem == null)
+        {
+            return this.NotFound();
+        }
+
+        await this.tagWebApiService.RemoveTagFromTaskAsync(taskId, tagId);
+        return this.RedirectToAction(nameof(this.Details), new { id = taskId });
     }
 }

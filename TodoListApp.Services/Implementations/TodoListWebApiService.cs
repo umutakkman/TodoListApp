@@ -29,7 +29,7 @@ public class TodoListWebApiService : ITodoListWebApiService
     public async Task<TodoListWebApiModel> CreateTodoListAsync(TodoListWebApiModel todoList)
     {
         var response = await this.httpClient.PostAsJsonAsync("api/TodoList", todoList);
-        response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
         var createdTodoList = await response.Content.ReadFromJsonAsync<TodoListWebApiModel>();
         ArgumentNullException.ThrowIfNull(createdTodoList);
         return createdTodoList;
@@ -37,14 +37,15 @@ public class TodoListWebApiService : ITodoListWebApiService
 
     public async Task DeleteTodoListAsync(int id)
     {
-        var response = await this.httpClient.DeleteAsync($"api/TodoList/{id}");
-        response.EnsureSuccessStatusCode();
+        var uri = new Uri($"api/TodoList/{id}", UriKind.Relative);
+        var response = await this.httpClient.DeleteAsync(uri);
+        _ = response.EnsureSuccessStatusCode();
     }
 
     public async Task<TodoListWebApiModel> UpdateTodoListAsync(int id, TodoListWebApiModel todoList)
     {
         var response = await this.httpClient.PutAsJsonAsync($"api/TodoList/{id}", todoList);
-        response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
         var updatedTodoList = await response.Content.ReadFromJsonAsync<TodoListWebApiModel>();
         ArgumentNullException.ThrowIfNull(updatedTodoList);
         return updatedTodoList;

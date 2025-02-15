@@ -16,6 +16,11 @@ builder.Services.AddHttpClient<ITaskItemWebApiService, TaskItemWebApiService>(cl
     client.BaseAddress = new Uri(builder.Configuration["TodoListApiBaseUrl"]);
 });
 
+builder.Services.AddHttpClient<ITagWebApiService, TagWebApiService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["TodoListApiBaseUrl"]);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
