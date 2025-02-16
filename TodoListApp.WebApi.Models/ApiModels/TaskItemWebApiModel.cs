@@ -48,12 +48,22 @@ public class TaskItemWebApiModel
     public int TodoListId { get; set; }
 
     /// <summary>
-    /// Gets or sets the collection of tags associated with the task item.
+    /// Gets the collection of tags associated with the task item.
     /// </summary>
-    public ICollection<TagWebApiModel>? Tags { get; set; } = new List<TagWebApiModel>();
+    public ICollection<TagWebApiModel>? Tags { get; private set; } = new List<TagWebApiModel>();
 
     /// <summary>
-    /// Gets or sets the collection of comments associated with the task item.
+    /// Gets the collection of comments associated with the task item.
     /// </summary>
-    public ICollection<CommentWebApiModel>? Comments { get; set; } = new List<CommentWebApiModel>();
+    public ICollection<CommentWebApiModel>? Comments { get; private set; } = new List<CommentWebApiModel>();
+
+    public void SetTags(ICollection<TagWebApiModel> tags)
+    {
+        this.Tags = tags;
+    }
+
+    public void SetComments(ICollection<CommentWebApiModel> comments)
+    {
+        this.Comments = comments;
+    }
 }

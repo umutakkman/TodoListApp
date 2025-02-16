@@ -249,20 +249,20 @@ namespace TodoListApp.WebApi.Controllers
 
             if (task.Tags == null)
             {
-                task.Tags = new List<TagEntity>();
+                task.SetTags(new List<TagEntity>());
             }
 
-            if (!task.Tags.Any(t => t.Id == tagId))
+            if (task.Tags != null && !task.Tags.Any(t => t.Id == tagId))
             {
                 task.Tags.Add(tag);
                 this.taskItemDatabaseService.UpdateTaskItem(task);
             }
 
-            var tagDtos = task.Tags.Select(t => new TagWebApiModel
+            var tagDtos = task.Tags?.Select(t => new TagWebApiModel
             {
                 Id = t.Id,
                 Name = t.Name,
-            });
+            }) ?? Enumerable.Empty<TagWebApiModel>();
 
             return this.Ok(tagDtos);
         }
@@ -481,7 +481,7 @@ namespace TodoListApp.WebApi.Controllers
         /// <returns>The task item DTO.</returns>
         private static TaskItemWebApiModel MapEntityToDto(TaskItemEntity entity)
         {
-            return new TaskItemWebApiModel
+            var dto = new TaskItemWebApiModel
             {
                 Id = entity.Id,
                 Title = entity.Title,
@@ -491,20 +491,22 @@ namespace TodoListApp.WebApi.Controllers
                 Status = entity.Status,
                 UserId = entity.UserId,
                 TodoListId = entity.TodoListId,
-                Tags = entity.Tags?.Select(t => new TagWebApiModel
-                {
-                    Id = t.Id,
-                    Name = t.Name,
-                }).ToList() ?? new List<TagWebApiModel>(),
-                Comments = entity.Comments?.Select(c => new CommentWebApiModel
-                {
-                    Id = c.Id,
-                    Text = c.Text,
-                    CreationDate = c.CreationDate,
-                    TaskItemId = c.TaskItemId,
-                    UserId = c.UserId,
-                }).ToList() ?? new List<CommentWebApiModel>(),
             };
+            dto.SetTags(entity.Tags?.Select(t => new TagWebApiModel
+            {
+                Id = t.Id,
+                Name = t.Name,
+            }).ToList() ?? new List<TagWebApiModel>());
+            dto.SetComments(entity.Comments?.Select(c => new CommentWebApiModel
+            {
+                Id = c.Id,
+                Text = c.Text,
+                CreationDate = c.CreationDate,
+                TaskItemId = c.TaskItemId,
+                UserId = c.UserId,
+            }).ToList() ?? new List<CommentWebApiModel>());
+
+            return dto;
         }
 
         /// <summary>

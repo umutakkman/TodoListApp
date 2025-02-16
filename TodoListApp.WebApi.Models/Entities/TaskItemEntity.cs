@@ -67,12 +67,22 @@ public class TaskItemEntity
     public TodoListEntity? TodoList { get; set; }
 
     /// <summary>
-    /// Gets or sets the collection of tags associated with the task item.
+    /// Gets the collection of tags associated with the task item.
     /// </summary>
-    public virtual ICollection<TagEntity>? Tags { get; set; } = new List<TagEntity>();
+    public virtual ICollection<TagEntity>? Tags { get; private set; } = new List<TagEntity>();
 
     /// <summary>
-    /// Gets or sets the collection of comments associated with the task item.
+    /// Gets the collection of comments associated with the task item.
     /// </summary>
-    public virtual ICollection<CommentEntity>? Comments { get; set; } = new List<CommentEntity>();
+    public virtual ICollection<CommentEntity>? Comments { get; private set; } = new List<CommentEntity>();
+
+    public void SetTags(ICollection<TagEntity> tags)
+    {
+        this.Tags = tags;
+    }
+
+    public void SetComments(ICollection<CommentEntity> comments)
+    {
+        this.Comments = comments;
+    }
 }

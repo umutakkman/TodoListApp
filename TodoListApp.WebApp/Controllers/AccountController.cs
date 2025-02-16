@@ -50,6 +50,12 @@ namespace TodoListApp.WebApp.Controllers
                 return this.View(model);
             }
 
+            var validationResult = this.ValidateRegisterModel(model);
+            if (validationResult != null)
+            {
+                return validationResult;
+            }
+
             ArgumentNullException.ThrowIfNull(model);
 
             return await this.RegisterUserAsync(model);
@@ -84,6 +90,12 @@ namespace TodoListApp.WebApp.Controllers
             if (!this.ModelState.IsValid)
             {
                 return this.View(model);
+            }
+
+            var validationResult = this.ValidateLoginModel(model);
+            if (validationResult != null)
+            {
+                return validationResult;
             }
 
             ArgumentNullException.ThrowIfNull(model);
@@ -125,6 +137,12 @@ namespace TodoListApp.WebApp.Controllers
             if (!this.ModelState.IsValid)
             {
                 return this.View(model);
+            }
+
+            var validationResult = this.ValidateForgotPasswordModel(model);
+            if (validationResult != null)
+            {
+                return validationResult;
             }
 
             ArgumentNullException.ThrowIfNull(model);
@@ -172,6 +190,12 @@ namespace TodoListApp.WebApp.Controllers
             if (!this.ModelState.IsValid)
             {
                 return this.View(model);
+            }
+
+            var validationResult = this.ValidateResetPasswordModel(model);
+            if (validationResult != null)
+            {
+                return validationResult;
             }
 
             ArgumentNullException.ThrowIfNull(model);
@@ -284,6 +308,70 @@ namespace TodoListApp.WebApp.Controllers
             }
 
             return this.View("ResetPassword", model);
+        }
+
+        /// <summary>
+        /// Validates the registration view model.
+        /// </summary>
+        /// <param name="model">The registration view model.</param>
+        /// <returns>The validation result.</returns>
+        private ViewResult? ValidateRegisterModel(RegisterViewModel model)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return this.View(model);
+            }
+
+            ArgumentNullException.ThrowIfNull(model);
+            return null;
+        }
+
+        /// <summary>
+        /// Validates the login view model.
+        /// </summary>
+        /// <param name="model">The login view model.</param>
+        /// <returns>The validation result.</returns>
+        private ViewResult? ValidateLoginModel(LoginViewModel model)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return this.View(model);
+            }
+
+            ArgumentNullException.ThrowIfNull(model);
+            return null;
+        }
+
+        /// <summary>
+        /// Validates the forgot password view model.
+        /// </summary>
+        /// <param name="model">The forgot password view model.</param>
+        /// <returns>The validation result.</returns>
+        private ViewResult? ValidateForgotPasswordModel(ForgotPasswordViewModel model)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return this.View(model);
+            }
+
+            ArgumentNullException.ThrowIfNull(model);
+            return null;
+        }
+
+        /// <summary>
+        /// Validates the reset password view model.
+        /// </summary>
+        /// <param name="model">The reset password view model.</param>
+        /// <returns>The validation result.</returns>
+        private ViewResult? ValidateResetPasswordModel(ResetPasswordViewModel model)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return this.View(model);
+            }
+
+            ArgumentNullException.ThrowIfNull(model);
+            return null;
         }
     }
 }
