@@ -5,75 +5,85 @@
 	ViewData["Title"] = "Assigned Tasks";
 }
 
-<h1>@ViewData["Title"]</h1>
-
-<form method="get" asp-action="Assigned" class="mb-4">
-	<input type="hidden" name="userId" value="@Model.UserId" />
-	<div class="row mb-3">
-		<div class="col-md-4">
-			<label for="searchString" class="form-label">Search Tasks</label>
-			<input type="text" name="searchString" id="searchString" class="form-control" value="@Model.SearchString" placeholder="Enter search term..." />
+<div class="container my-5">
+	<div class="card shadow-sm border-0">
+		<div class="card-header bg-white border-bottom">
+			<h1 class="card-title mb-0">@ViewData["Title"]</h1>
 		</div>
-		<div class="col-md-2 align-self-end">
-			<button type="submit" class="btn btn-primary">Search</button>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-4">
-			<label for="status" class="form-label">Filter by Status</label>
-			<select name="status" id="status" class="form-select" onchange="this.form.submit()">
-				<option value="" selected="@(Model.Status == null)">All</option>
-				<option value="NotStarted" selected="@(Model.Status == "NotStarted")">Not Started</option>
-				<option value="InProgress" selected="@(Model.Status == "InProgress")">In Progress</option>
-				<option value="Completed" selected="@(Model.Status == "Completed")">Completed</option>
-			</select>
-		</div>
-		<div class="col-md-4">
-			<label for="sortBy" class="form-label">Sort By</label>
-			<select name="sortBy" id="sortBy" class="form-select" onchange="this.form.submit()">
-				<option value="name" selected="@(Model.SortBy?.ToLower() == "name")">Task Name</option>
-				<option value="duedate" selected="@(Model.SortBy?.ToLower() == "duedate")">Due Date</option>
-			</select>
-		</div>
-		<div class="col-md-4">
-			<label for="sortOrder" class="form-label">Sort Order</label>
-			<select name="sortOrder" id="sortOrder" class="form-select" onchange="this.form.submit()">
-				<option value="asc" selected="@(Model.SortOrder?.ToLower() == "asc")">Ascending</option>
-				<option value="desc" selected="@(Model.SortOrder?.ToLower() == "desc")">Descending</option>
-			</select>
-		</div>
-	</div>
-</form>
-
-<table class="table">
-	<thead>
-		<tr>
-			<th>Title</th>
-			<th>Due Date</th>
-			<th>Status</th>
-			<th>Actions</th>
-		</tr>
-	</thead>
-	<tbody>
-		@foreach (var task in Model.Tasks)
-		{
-			<tr class="@(task.DueDate < DateTime.Now ? "table-danger" : "")">
-				<td>@task.Title</td>
-				<td>@task.DueDate.ToString("yyyy-MM-dd HH:mm")</td>
-				<td>
-					<form asp-action="Assigned" method="post" class="d-inline">
-						<input type="hidden" name="id" value="@task.Id" />
-						<select name="status" class="form-select" onchange="this.form.submit()">
-							<option value="NotStarted" selected="@(task.Status == TaskStatus.NotStarted)">Not Started</option>
-							<option value="InProgress" selected="@(task.Status == TaskStatus.InProgress)">In Progress</option>
-							<option value="Completed" selected="@(task.Status == TaskStatus.Completed)">Completed</option>
+		<div class="card-body">
+			<form method="get" asp-action="Assigned" class="mb-4">
+				<input type="hidden" name="userId" value="@Model.UserId" />
+				<div class="row mb-3">
+					<div class="col-md-4">
+						<label for="searchString" class="form-label">Search Tasks</label>
+						<input type="text" name="searchString" id="searchString" class="form-control"
+							   value="@Model.SearchString" placeholder="Enter search term..." />
+					</div>
+					<div class="col-md-2 align-self-end">
+						<button type="submit" class="btn btn-primary">Search</button>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-4">
+						<label for="status" class="form-label">Filter by Status</label>
+						<select name="status" id="status" class="form-select" onchange="this.form.submit()">
+							<option value="" selected="@(Model.Status == null)">All</option>
+							<option value="NotStarted" selected="@(Model.Status == "NotStarted")">Not Started</option>
+							<option value="InProgress" selected="@(Model.Status == "InProgress")">In Progress</option>
+							<option value="Completed" selected="@(Model.Status == "Completed")">Completed</option>
 						</select>
-					</form>
-				</td>
-				<td>
-					<a asp-action="Details" asp-route-id="@task.Id" class="btn btn-info">Details</a>
-				</td>
-			</tr>
-		}
-	</tbody>
-</table>
+					</div>
+					<div class="col-md-4">
+						<label for="sortBy" class="form-label">Sort By</label>
+						<select name="sortBy" id="sortBy" class="form-select" onchange="this.form.submit()">
+							<option value="name" selected="@(Model.SortBy?.ToLower() == "name")">Task Name</option>
+							<option value="duedate" selected="@(Model.SortBy?.ToLower() == "duedate")">Due Date</option>
+						</select>
+					</div>
+					<div class="col-md-4">
+						<label for="sortOrder" class="form-label">Sort Order</label>
+						<select name="sortOrder" id="sortOrder" class="form-select" onchange="this.form.submit()">
+							<option value="asc" selected="@(Model.SortOrder?.ToLower() == "asc")">Ascending</option>
+							<option value="desc" selected="@(Model.SortOrder?.ToLower() == "desc")">Descending</option>
+						</select>
+					</div>
+				</div>
+			</form>
+
+			<div class="table-responsive">
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>Title</th>
+							<th>Due Date</th>
+							<th>Status</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var task in Model.Tasks)
+						{
+							<tr class="@(task.DueDate < DateTime.Now ? "table-danger" : "")">
+								<td>@task.Title</td>
+								<td>@task.DueDate.ToString("yyyy-MM-dd HH:mm")</td>
+								<td>
+									<form asp-action="Assigned" method="post" class="d-inline">
+										<input type="hidden" name="id" value="@task.Id" />
+										<select name="status" class="form-select" onchange="this.form.submit()">
+											<option value="NotStarted" selected="@(task.Status == TaskStatus.NotStarted)">Not Started</option>
+											<option value="InProgress" selected="@(task.Status == TaskStatus.InProgress)">In Progress</option>
+											<option value="Completed" selected="@(task.Status == TaskStatus.Completed)">Completed</option>
+										</select>
+									</form>
+								</td>
+								<td>
+									<a asp-action="Details" asp-route-id="@task.Id" class="btn btn-info">Details</a>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

@@ -4,7 +4,7 @@ namespace TodoListApp.WebApi.Models.ViewModels
     {
         public IEnumerable<ApiModels.TaskItemWebApiModel> Tasks { get; set; } = new List<ApiModels.TaskItemWebApiModel>();
 
-        public int UserId { get; set; }
+        public string? UserId { get; set; }
 
         public string? SearchString { get; set; }
 

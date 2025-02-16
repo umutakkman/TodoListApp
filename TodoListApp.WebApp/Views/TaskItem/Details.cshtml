@@ -4,78 +4,81 @@
 	ViewData["Title"] = "Task Item Details";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="container my-5">
+	<div class="card shadow-sm border-0">
+		<div class="card-header bg-white border-bottom">
+			<h1 class="card-title mb-0">@ViewData["Title"]</h1>
+		</div>
+		<div class="card-body">
+			<div>
+				<dl class="row">
+					<dt class="col-sm-2">Title</dt>
+					<dd class="col-sm-10">@Model.Title</dd>
+					<dt class="col-sm-2">Description</dt>
+					<dd class="col-sm-10">@Model.Description</dd>
+					<dt class="col-sm-2">Creation Date</dt>
+					<dd class="col-sm-10">@Model.CreationDate</dd>
+					<dt class="col-sm-2">Due Date</dt>
+					<dd class="col-sm-10">@Model.DueDate</dd>
+					<dt class="col-sm-2">Status</dt>
+					<dd class="col-sm-10">@Model.Status</dd>
+				</dl>
+			</div>
 
-<div>
-	<dl class="row">
-		<dt class="col-sm-2">Title</dt>
-		<dd class="col-sm-10">@Model.Title</dd>
-		<dt class="col-sm-2">Description</dt>
-		<dd class="col-sm-10">@Model.Description</dd>
-		<dt class="col-sm-2">Creation Date</dt>
-		<dd class="col-sm-10">@Model.CreationDate</dd>
-		<dt class="col-sm-2">Due Date</dt>
-		<dd class="col-sm-10">@Model.DueDate</dd>
-		<dt class="col-sm-2">Status</dt>
-		<dd class="col-sm-10">@Model.Status</dd>
-		<dt class="col-sm-2">User ID</dt>
-		<dd class="col-sm-10">@Model.UserId</dd>
-		<dt class="col-sm-2">Todo List ID</dt>
-		<dd class="col-sm-10">@Model.TodoListId</dd>
-	</dl>
-</div>
+			<hr />
 
-<hr />
+			<div>
+				<h3>Assigned Tags</h3>
+				@if (Model.Tags != null && Model.Tags.Any())
+				{
+					<ul class="list-unstyled">
+						@foreach (var tag in Model.Tags)
+						{
+							<li>
+								<span class="badge bg-info">@tag.Name</span>
+							</li>
+						}
+					</ul>
+				}
+				else
+				{
+					<p>No tags assigned.</p>
+				}
+			</div>
 
-<div>
-	<h3>Assigned Tags</h3>
-	@if (Model.Tags != null && Model.Tags.Any())
-	{
-		<ul class="list-unstyled">
-			@foreach (var tag in Model.Tags)
-			{
-				<li>
-					<span class="badge bg-info">@tag.Name</span>
-				</li>
-			}
-		</ul>
-	}
-	else
-	{
-		<p>No tags assigned.</p>
-	}
-</div>
+			<hr />
 
-<hr />
+			<div>
+				<h3>Comments</h3>
+				@if (Model.Comments != null && Model.Comments.Any())
+				{
+					<ul class="list-unstyled">
+						@foreach (var comment in Model.Comments)
+						{
+							<li class="mb-2">
+								<div>
+									<strong>Comment:</strong> @comment.Text
+								</div>
+								<div>
+									<small>Posted on: @comment.CreationDate.ToString("yyyy-MM-dd HH:mm")</small>
+								</div>
+							</li>
+						}
+					</ul>
+				}
+				else
+				{
+					<p>No comments available.</p>
+				}
+			</div>
 
-<div>
-	<h3>Comments</h3>
-	@if (Model.Comments != null && Model.Comments.Any())
-	{
-		<ul class="list-unstyled">
-			@foreach (var comment in Model.Comments)
-			{
-				<li>
-					<div>
-						<strong>Comment:</strong> @comment.Text
-					</div>
-					<div>
-						<small>Posted on: @comment.CreationDate.ToString("yyyy-MM-dd HH:mm")</small>
-					</div>
-				</li>
-			}
-		</ul>
-	}
-	else
-	{
-		<p>No comments available.</p>
-	}
-</div>
+			<hr />
 
-<hr />
-
-<div>
-	<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
-	<a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
-	<a asp-controller="TodoList" asp-action="Details" asp-route-id="@Model.TodoListId" class="btn btn-secondary">Back to List</a>
+			<div>
+				<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+				<a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+				<a asp-controller="TodoList" asp-action="Details" asp-route-id="@Model.TodoListId" class="btn btn-secondary">Back to List</a>
+			</div>
+		</div>
+	</div>
 </div>

@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace TodoListApp.WebApi.Models.Entities;
 
@@ -13,6 +15,11 @@ public class TodoListEntity
 
     [StringLength(500, ErrorMessage = "The description cannot be longer than 500 characters.")]
     public string Description { get; set; } = string.Empty;
+
+    public string OwnerId { get; set; } = string.Empty;
+
+    [ForeignKey(nameof(OwnerId))]
+    public virtual IdentityUser Owner { get; set; } = null!;
 
     public virtual ICollection<TaskItemEntity>? TaskItems { get; } = new List<TaskItemEntity>();
 }

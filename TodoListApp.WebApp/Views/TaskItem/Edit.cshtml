@@ -6,143 +6,147 @@
 	ViewData["Title"] = "Edit Task Item";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="container my-5">
+	<div class="card shadow-sm border-0">
+		<div class="card-header bg-white border-bottom">
+			<h1 class="card-title mb-0">@ViewData["Title"]</h1>
+		</div>
+		<div class="card-body">
+			<form asp-action="Edit" method="post">
+				<input type="hidden" asp-for="Id" />
+				<div class="form-group mb-3">
+					<label asp-for="Title" class="control-label"></label>
+					<input asp-for="Title" class="form-control" />
+					<span asp-validation-for="Title" class="text-danger"></span>
+				</div>
+				<div class="form-group mb-3">
+					<label asp-for="Description" class="control-label"></label>
+					<textarea asp-for="Description" class="form-control"></textarea>
+					<span asp-validation-for="Description" class="text-danger"></span>
+				</div>
+				<div class="form-group mb-3">
+					<label asp-for="DueDate" class="control-label"></label>
+					<input asp-for="DueDate" type="datetime-local" class="form-control" />
+					<span asp-validation-for="DueDate" class="text-danger"></span>
+				</div>
+				<div class="form-group mb-3">
+					<label asp-for="Status" class="control-label"></label>
+					<select asp-for="Status" class="form-control">
+						<option value="NotStarted">Not Started</option>
+						<option value="InProgress">In Progress</option>
+						<option value="Completed">Completed</option>
+					</select>
+					<span asp-validation-for="Status" class="text-danger"></span>
+				</div>
+				<input type="hidden" asp-for="TodoListId" />
+				<input type="hidden" asp-for="UserId" />
+				<div class="form-group mb-4">
+					<input type="submit" value="Save" class="btn btn-primary" />
+				</div>
+			</form>
 
-<form asp-action="Edit" method="post">
-	<input type="hidden" asp-for="Id" />
-	<div class="form-group">
-		<label asp-for="Title" class="control-label"></label>
-		<input asp-for="Title" class="form-control" />
-		<span asp-validation-for="Title" class="text-danger"></span>
-	</div>
-	<div class="form-group">
-		<label asp-for="Description" class="control-label"></label>
-		<textarea asp-for="Description" class="form-control"></textarea>
-		<span asp-validation-for="Description" class="text-danger"></span>
-	</div>
-	<div class="form-group">
-		<label asp-for="DueDate" class="control-label"></label>
-		<input asp-for="DueDate" type="datetime-local" class="form-control" />
-		<span asp-validation-for="DueDate" class="text-danger"></span>
-	</div>
-	<div class="form-group">
-		<label asp-for="Status" class="control-label"></label>
-		<select asp-for="Status" class="form-control">
-			<option value="NotStarted">Not Started</option>
-			<option value="InProgress">In Progress</option>
-			<option value="Completed">Completed</option>
-		</select>
-		<span asp-validation-for="Status" class="text-danger"></span>
-	</div>
-	<input type="hidden" asp-for="TodoListId" />
-	<input type="hidden" asp-for="UserId" />
-	<div class="form-group">
-		<input type="submit" value="Save" class="btn btn-primary" />
-	</div>
-</form>
+			<hr />
 
-<hr />
-
-<div>
-
-	<h4>Current Tags:</h4>
-	@if (Model.Tags != null && Model.Tags.Any())
-	{
-		<ul class="list-unstyled">
-			@foreach (var tag in Model.Tags)
-			{
-				<li>
-					<span class="badge bg-info me-2">@tag.Name</span>
-					<form asp-action="RemoveTag" method="post" class="d-inline">
-						<input type="hidden" name="taskId" value="@Model.Id" />
-						<input type="hidden" name="tagId" value="@tag.Id" />
-						<button type="submit" class="btn btn-sm btn-danger">Remove</button>
-					</form>
-				</li>
-			}
-		</ul>
-	}
-	else
-	{
-		<p>No tags assigned.</p>
-	}
-
-	<hr />
-
-	<h4>Add a Tag:</h4>
-	<form asp-action="AddTag" method="post" class="row g-3">
-		<input type="hidden" name="taskId" value="@Model.Id" />
-		<div class="col-auto">
-			<label for="tagId" class="visually-hidden">Select Tag</label>
-			<select name="tagId" id="tagId" class="form-select" required>
-				<option value="">-- Select Tag --</option>
-				@if (ViewBag.AvailableTags != null)
+			<div>
+				<h4>Current Tags:</h4>
+				@if (Model.Tags != null && Model.Tags.Any())
 				{
-					foreach (var tag in (IEnumerable<TagWebApiModel>)ViewBag.AvailableTags)
-					{
-						<option value="@tag.Id">@tag.Name</option>
-					}
+					<ul class="list-unstyled">
+						@foreach (var tag in Model.Tags)
+						{
+							<li class="mb-2">
+								<span class="badge bg-info me-2">@tag.Name</span>
+								<form asp-action="RemoveTag" method="post" class="d-inline">
+									<input type="hidden" name="taskId" value="@Model.Id" />
+									<input type="hidden" name="tagId" value="@tag.Id" />
+									<button type="submit" class="btn btn-sm btn-danger">Remove</button>
+								</form>
+							</li>
+						}
+					</ul>
 				}
-			</select>
+				else
+				{
+					<p>No tags assigned.</p>
+				}
+
+				<hr />
+
+				<h4>Add a Tag:</h4>
+				<form asp-action="AddTag" method="post" class="row g-3">
+					<input type="hidden" name="taskId" value="@Model.Id" />
+					<div class="col-auto">
+						<label for="tagId" class="visually-hidden">Select Tag</label>
+						<select name="tagId" id="tagId" class="form-select" required>
+							<option value="">-- Select Tag --</option>
+							@if (ViewBag.AvailableTags != null)
+							{
+								foreach (var tag in (IEnumerable<TagWebApiModel>)ViewBag.AvailableTags)
+								{
+									<option value="@tag.Id">@tag.Name</option>
+								}
+							}
+						</select>
+					</div>
+					<div class="col-auto">
+						<button type="submit" class="btn btn-primary mb-3">Add Tag</button>
+					</div>
+				</form>
+			</div>
+
+			<hr />
+
+			<div>
+
+				<h4>Existing Comments:</h4>
+				@if (Model.Comments != null && Model.Comments.Any())
+				{
+					<ul class="list-unstyled">
+						@foreach (var comment in Model.Comments)
+						{
+							<li class="mb-3">
+								<div>
+									<strong>@comment.CreationDate.ToString("yyyy-MM-dd HH:mm"):</strong> @comment.Text
+								</div>
+								<div>
+									<a asp-action="EditComment" asp-route-taskId="@Model.Id" asp-route-commentId="@comment.Id" class="btn btn-sm btn-primary me-2">Edit</a>
+									<form asp-action="RemoveComment" method="post" class="d-inline">
+										<input type="hidden" name="taskId" value="@Model.Id" />
+										<input type="hidden" name="commentId" value="@comment.Id" />
+										<button type="submit" class="btn btn-sm btn-danger">Remove</button>
+									</form>
+								</div>
+							</li>
+						}
+					</ul>
+				}
+				else
+				{
+					<p>No comments available.</p>
+				}
+
+				<hr />
+
+				<h4>Add New Comment:</h4>
+				<form asp-action="AddComment" method="post" class="row g-3">
+					<input type="hidden" name="taskId" value="@Model.Id" />
+					<div class="col-auto">
+						<label for="commentText" class="visually-hidden">Comment</label>
+						<input type="text" id="commentText" name="Text" class="form-control" placeholder="Enter your comment" required />
+					</div>
+					<div class="col-auto">
+						<button type="submit" class="btn btn-primary mb-3">Add Comment</button>
+					</div>
+				</form>
+			</div>
+
+			<hr />
+
+			<div>
+				<a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">Back to Details</a>
+			</div>
 		</div>
-		<div class="col-auto">
-			<button type="submit" class="btn btn-primary mb-3">Add Tag</button>
-		</div>
-	</form>
-</div>
-
-<hr />
-
-div>
-<h3>Manage Comments</h3>
-
-<h4>Existing Comments:</h4>
-@if (Model.Comments != null && Model.Comments.Any())
-{
-	<ul class="list-unstyled">
-		@foreach (var comment in Model.Comments)
-		{
-			<li>
-				<div>
-					<strong>@comment.CreationDate.ToString("yyyy-MM-dd HH:mm"):</strong> @comment.Text
-				</div>
-				<div>
-					<a asp-action="EditComment" asp-route-taskId="@Model.Id" asp-route-commentId="@comment.Id" class="btn btn-sm btn-primary me-2">Edit</a>
-
-					<form asp-action="RemoveComment" method="post" class="d-inline">
-						<input type="hidden" name="taskId" value="@Model.Id" />
-						<input type="hidden" name="commentId" value="@comment.Id" />
-						<button type="submit" class="btn btn-sm btn-danger">Remove</button>
-					</form>
-				</div>
-			</li>
-		}
-	</ul>
-}
-else
-{
-	<p>No comments available.</p>
-}
-
-<hr />
-
-<h4>Add New Comment:</h4>
-<form asp-action="AddComment" method="post" class="row g-3">
-	<input type="hidden" name="taskId" value="@Model.Id" />
-	<div class="col-auto">
-		<label for="commentText" class="visually-hidden">Comment</label>
-		<input type="text" id="commentText" name="Text" class="form-control" placeholder="Enter your comment" required />
 	</div>
-	<div class="col-auto">
-		<button type="submit" class="btn btn-primary mb-3">Add Comment</button>
-	</div>
-</form>
-</div>
-
-<hr />
-
-<div>
-	<a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">Back to Details</a>
 </div>
 
 @section Scripts {

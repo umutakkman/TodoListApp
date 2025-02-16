@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TodoListApp.Services.Database.Data;
 using TodoListApp.Services.Implementations;
@@ -8,10 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
-// Configure TodoListDbContext with SQL Server.
-builder.Services.AddDbContext<TodoListDbContext>(options =>
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("TodoListDb"));
+    _ = options.UseSqlServer(builder.Configuration.GetConnectionString("TodoListDb")
+!);
 });
 
 builder.Services.AddScoped<ITodoListDatabaseService, TodoListDatabaseService>();
@@ -34,8 +35,8 @@ using (var scope = app.Services.CreateScope())
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    _ = app.UseSwagger();
+    _ = app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 using TaskStatus = TodoListApp.Common.TaskStatus;
 
 namespace TodoListApp.WebApi.Models.Entities;
@@ -22,12 +23,12 @@ public class TaskItemEntity
 
     public TaskStatus Status { get; set; } = TaskStatus.NotStarted;
 
-    public int? UserId { get; set; }
+    public string? UserId { get; set; }
 
     public int TodoListId { get; set; }
 
     [ForeignKey(nameof(UserId))]
-    public UserEntity? User { get; set; }
+    public IdentityUser? User { get; set; }
 
     [ForeignKey(nameof(TodoListId))]
     public TodoListEntity? TodoList { get; set; }

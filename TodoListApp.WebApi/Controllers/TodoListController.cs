@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoListApp.Services.Interfaces;
@@ -44,7 +45,7 @@ namespace TodoListApp.WebApi.Controllers
         }
 
         [HttpPost]
-        public ActionResult<TodoListWebApiModel> CreateTodoList([FromBody] TodoListWebApiModel dto)
+        public ActionResult<TodoListWebApiModel> CreateTodoList(TodoListWebApiModel dto)
         {
             if (dto == null)
             {
@@ -116,6 +117,7 @@ namespace TodoListApp.WebApi.Controllers
                 Id = entity.Id,
                 Title = entity.Title,
                 Description = entity.Description,
+                OwnerId = entity.OwnerId,
                 TaskItems = entity.TaskItems?.Select(t => new TaskItemWebApiModel
                 {
                     Id = t.Id,
@@ -136,6 +138,7 @@ namespace TodoListApp.WebApi.Controllers
             {
                 Title = dto.Title,
                 Description = dto.Description ?? string.Empty,
+                OwnerId = dto.OwnerId,
             };
         }
     }

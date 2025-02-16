@@ -49,7 +49,7 @@ public class TaskItemWebApiService : ITaskItemWebApiService
         return updatedtaskItem;
     }
 
-    public async Task<IEnumerable<TaskItemWebApiModel>> GetAssignedTasksAsync(int userId)
+    public async Task<IEnumerable<TaskItemWebApiModel>> GetAssignedTasksAsync(string userId)
     {
         var response = await this.httpClient.GetFromJsonAsync<IEnumerable<TaskItemWebApiModel>>($"api/TaskItem/assigned/{userId}");
         ArgumentNullException.ThrowIfNull(response);

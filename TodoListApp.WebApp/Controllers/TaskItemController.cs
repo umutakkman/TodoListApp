@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TodoListApp.Services.Interfaces;
 using TodoListApp.WebApi.Models.ApiModels;
 using TodoListApp.WebApi.Models.ViewModels;
@@ -10,12 +12,16 @@ public class TaskItemController : Controller
     private readonly ITaskItemWebApiService taskItemWebApiService;
     private readonly ITagWebApiService tagWebApiService;
     private readonly ICommentWebApiService commentWebApiService;
+    private readonly ITodoListWebApiService todoListWebApiService;
+    private readonly UserManager<IdentityUser> userManager;
 
-    public TaskItemController(ITaskItemWebApiService taskItemWebApiService, ITagWebApiService tagWebApiService, ICommentWebApiService commentWebApiService)
+    public TaskItemController(ITaskItemWebApiService taskItemWebApiService, ITagWebApiService tagWebApiService, ICommentWebApiService commentWebApiService, ITodoListWebApiService todoListWebApiService, UserManager<IdentityUser> userManager)
     {
         this.taskItemWebApiService = taskItemWebApiService;
         this.tagWebApiService = tagWebApiService;
         this.commentWebApiService = commentWebApiService;
+        this.todoListWebApiService = todoListWebApiService;
+        this.userManager = userManager;
     }
 
     public async Task<IActionResult> Details(int id)
@@ -32,20 +38,53 @@ public class TaskItemController : Controller
             return this.NotFound();
         }
 
+        var todoList = await this.todoListWebApiService.GetTodoListAsync(taskItem.TodoListId);
+
+        if (todoList == null)
+        {
+            return this.NotFound();
+        }
+
+        if (taskItem.UserId != this.userManager.GetUserId(this.User) && todoList.OwnerId != this.userManager.GetUserId(this.User))
+        {
+            return this.Forbid();
+        }
+
         return this.View(taskItem);
     }
 
-    public IActionResult Create(int todoListId)
+    public async Task<IActionResult> Create(int todoListId)
     {
         if (!this.ModelState.IsValid)
         {
             return this.BadRequest(this.ModelState);
         }
 
+        var todoList = await this.todoListWebApiService.GetTodoListAsync(todoListId);
+        if (todoList == null)
+        {
+            return this.NotFound();
+        }
+
+        if (todoList.OwnerId != this.userManager.GetUserId(this.User))
+        {
+            return this.Forbid();
+        }
+
+        var users = this.userManager.Users.ToList();
+        var userSelectList = users.Select(u => new SelectListItem
+        {
+            Value = u.Id,
+            Text = u.Email,
+        }).ToList();
+
+        this.ViewBag.UserList = userSelectList;
+
         var model = new TaskItemWebApiModel
         {
             TodoListId = todoListId,
         };
+
         return this.View(model);
     }
 
@@ -73,6 +112,17 @@ public class TaskItemController : Controller
         if (taskItem == null)
         {
             return this.NotFound();
+        }
+
+        var todoList = await this.todoListWebApiService.GetTodoListAsync(taskItem.TodoListId);
+        if (todoList == null)
+        {
+            return this.NotFound();
+        }
+
+        if (todoList.OwnerId != this.userManager.GetUserId(this.User))
+        {
+            return this.Forbid();
         }
 
         this.ViewBag.AvailableTags = await this.tagWebApiService.GetAllTagsAsync();
@@ -112,6 +162,17 @@ public class TaskItemController : Controller
             return this.NotFound();
         }
 
+        var todoList = await this.todoListWebApiService.GetTodoListAsync(taskItem.TodoListId);
+        if (todoList == null)
+        {
+            return this.NotFound();
+        }
+
+        if (todoList.OwnerId != this.userManager.GetUserId(this.User))
+        {
+            return this.Forbid();
+        }
+
         return this.View(taskItem);
     }
 
@@ -135,13 +196,14 @@ public class TaskItemController : Controller
         return this.RedirectToAction("Details", "TodoList", new { id = todoListId });
     }
 
-    public async Task<IActionResult> Assigned(int userId, string? status = null, string? sortBy = "name", string? sortOrder = "asc", string? searchString = null)
+    public async Task<IActionResult> Assigned(string? status = null, string? sortBy = "name", string? sortOrder = "asc", string? searchString = null)
     {
         if (!this.ModelState.IsValid)
         {
             return this.BadRequest(this.ModelState);
         }
 
+        var userId = this.userManager.GetUserId(this.User);
         var tasks = await this.taskItemWebApiService.GetAssignedTasksAsync(userId);
 
         if (!string.IsNullOrEmpty(status))
@@ -206,6 +268,17 @@ public class TaskItemController : Controller
             return this.NotFound();
         }
 
+        var todoList = await this.todoListWebApiService.GetTodoListAsync(taskItem.TodoListId);
+        if (todoList == null)
+        {
+            return this.NotFound();
+        }
+
+        if (todoList.OwnerId != this.userManager.GetUserId(this.User))
+        {
+            return this.Forbid();
+        }
+
         _ = await this.tagWebApiService.AddTagToTaskAsync(taskId, tagId);
         return this.RedirectToAction(nameof(this.Details), new { id = taskId });
     }
@@ -225,6 +298,17 @@ public class TaskItemController : Controller
             return this.NotFound();
         }
 
+        var todoList = await this.todoListWebApiService.GetTodoListAsync(taskItem.TodoListId);
+        if (todoList == null)
+        {
+            return this.NotFound();
+        }
+
+        if (todoList.OwnerId != this.userManager.GetUserId(this.User))
+        {
+            return this.Forbid();
+        }
+
         await this.tagWebApiService.RemoveTagFromTaskAsync(taskId, tagId);
         return this.RedirectToAction(nameof(this.Details), new { id = taskId });
     }
@@ -236,6 +320,23 @@ public class TaskItemController : Controller
         if (!this.ModelState.IsValid)
         {
             return this.BadRequest(this.ModelState);
+        }
+
+        var taskItem = await this.taskItemWebApiService.GetTaskItemAsync(taskId);
+        if (taskItem == null)
+        {
+            return this.NotFound();
+        }
+
+        var todoList = await this.todoListWebApiService.GetTodoListAsync(taskItem.TodoListId);
+        if (todoList == null)
+        {
+            return this.NotFound();
+        }
+
+        if (todoList.OwnerId != this.userManager.GetUserId(this.User))
+        {
+            return this.Forbid();
         }
 
         if (string.IsNullOrEmpty(text))
@@ -258,6 +359,23 @@ public class TaskItemController : Controller
             return this.BadRequest(this.ModelState);
         }
 
+        var taskItem = await this.taskItemWebApiService.GetTaskItemAsync(taskId);
+        if (taskItem == null)
+        {
+            return this.NotFound();
+        }
+
+        var todoList = await this.todoListWebApiService.GetTodoListAsync(taskItem.TodoListId);
+        if (todoList == null)
+        {
+            return this.NotFound();
+        }
+
+        if (todoList.OwnerId != this.userManager.GetUserId(this.User))
+        {
+            return this.Forbid();
+        }
+
         await this.commentWebApiService.DeleteCommentAsync(taskId, commentId);
         return this.RedirectToAction(nameof(this.Edit), new { id = taskId });
     }
@@ -267,6 +385,19 @@ public class TaskItemController : Controller
         if (!this.ModelState.IsValid)
         {
             return this.BadRequest(this.ModelState);
+        }
+
+        var taskItem = await this.taskItemWebApiService.GetTaskItemAsync(taskId);
+        if (taskItem == null)
+        {
+            return this.NotFound();
+        }
+
+        var todoList = await this.todoListWebApiService.GetTodoListAsync(taskItem.TodoListId);
+
+        if (todoList.OwnerId != this.userManager.GetUserId(this.User))
+        {
+            return this.Forbid();
         }
 
         var comment = await this.commentWebApiService.GetCommentAsync(taskId, commentId);

@@ -15,7 +15,7 @@ public class TaskItemWebApiModel
 
     public TaskStatus Status { get; set; } = TaskStatus.NotStarted;
 
-    public int? UserId { get; set; }
+    public string? UserId { get; set; }
 
     public int TodoListId { get; set; }
 

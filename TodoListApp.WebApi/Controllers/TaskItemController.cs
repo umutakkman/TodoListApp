@@ -106,8 +106,8 @@ namespace TodoListApp.WebApi.Controllers
             return this.NoContent();
         }
 
-        [HttpGet("assigned/{userId:int}")]
-        public ActionResult<IEnumerable<TaskItemWebApiModel>> GetAssignedTasks(int userId)
+        [HttpGet("assigned/{userId}")]
+        public ActionResult<IEnumerable<TaskItemWebApiModel>> GetAssignedTasks(string userId)
         {
             var entities = this.taskItemDatabaseService.TaskItems.Where(x => x.UserId == userId).ToList();
             var dtos = entities.Select(MapEntityToDto);
@@ -417,7 +417,7 @@ namespace TodoListApp.WebApi.Controllers
                 Description = dto.Description,
                 DueDate = dto.DueDate,
                 Status = dto.Status,
-                UserId = dto.UserId ?? 0,
+                UserId = dto.UserId,
                 TodoListId = dto.TodoListId,
             };
         }

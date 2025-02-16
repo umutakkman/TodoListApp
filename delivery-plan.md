@@ -117,8 +117,8 @@ The developer's checklist for week 3:
 - [x] T12: Implement Epic 5 frontend functionality in the *TodoListApp.WebApp* application.
 - [x] T13: Implement Epic 6 backend functionality in the *TodoListApp.WebApi* application.
 - [x] T14: Implement Epic 6 frontend functionality in the *TodoListApp.WebApp* application.
-- [ ] T15: Implement Epic 7 functionality in the *TodoListApp.WebApp* application.
-- [ ] T16: Implement Epic 8 frontend functionality in the *TodoListApp.WebApp* application.
-- [ ] T17: Implement Epic 8 frontend functionality in the *TodoListApp.WebApp* application.
-- [ ] All changes are committed and pushed to the remote repository.
-- [ ] There are no major or critical issues or blockers found during building the solution.
+- [x] T15: Implement Epic 7 functionality in the *TodoListApp.WebApp* application.
+- [x] T16: Implement Epic 8 frontend functionality in the *TodoListApp.WebApp* application.
+- [x] T17: Implement Epic 8 frontend functionality in the *TodoListApp.WebApp* application.
+- [x] All changes are committed and pushed to the remote repository.
+- [x] There are no major or critical issues or blockers found during building the solution.

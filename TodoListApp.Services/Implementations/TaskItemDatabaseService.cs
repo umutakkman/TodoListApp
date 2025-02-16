@@ -5,9 +5,9 @@ using TodoListApp.WebApi.Models.Entities;
 namespace TodoListApp.Services.Implementations;
 public class TaskItemDatabaseService : ITaskItemDatabaseService
 {
-    private readonly TodoListDbContext context;
+    private readonly ApplicationDbContext context;
 
-    public TaskItemDatabaseService(TodoListDbContext context)
+    public TaskItemDatabaseService(ApplicationDbContext context)
     {
         this.context = context;
     }

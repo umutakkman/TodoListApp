@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace TodoListApp.WebApi.Models.Entities;
 
@@ -16,11 +17,11 @@ public class CommentEntity
 
     public int TaskItemId { get; set; }
 
-    public int? UserId { get; set; }
+    public string? UserId { get; set; }
 
     [ForeignKey(nameof(TaskItemId))]
     public virtual TaskItemEntity TaskItem { get; set; } = null!;
 
     [ForeignKey(nameof(UserId))]
-    public virtual UserEntity? User { get; set; }
+    public virtual IdentityUser? User { get; set; }
 }

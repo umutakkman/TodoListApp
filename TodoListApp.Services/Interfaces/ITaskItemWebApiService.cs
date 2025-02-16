@@ -12,7 +12,7 @@ public interface ITaskItemWebApiService
 
     Task<TaskItemWebApiModel> UpdateTaskItemAsync(int id, TaskItemWebApiModel taskItem);
 
-    Task<IEnumerable<TaskItemWebApiModel>> GetAssignedTasksAsync(int userId);
+    Task<IEnumerable<TaskItemWebApiModel>> GetAssignedTasksAsync(string userId);
 
     Task<TaskItemWebApiModel> UpdateTaskStatusAsync(int id, TaskStatus status);
 }

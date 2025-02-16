@@ -5,9 +5,9 @@ using TodoListApp.WebApi.Models.Entities;
 namespace TodoListApp.Services.Implementations;
 public class TagDatabaseService : ITagDatabaseService
 {
-    private readonly TodoListDbContext context;
+    private readonly ApplicationDbContext context;
 
-    public TagDatabaseService(TodoListDbContext context)
+    public TagDatabaseService(ApplicationDbContext context)
     {
         this.context = context;
     }

@@ -9,5 +9,5 @@ public class CommentWebApiModel
 
     public int TaskItemId { get; set; }
 
-    public int? UserId { get; set; }
+    public string? UserId { get; set; }
 }

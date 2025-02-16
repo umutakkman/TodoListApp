@@ -5,9 +5,9 @@ using TodoListApp.WebApi.Models.Entities;
 namespace TodoListApp.Services.Implementations;
 public class CommentDatabaseService : ICommentDatabaseService
 {
-    private readonly TodoListDbContext context;
+    private readonly ApplicationDbContext context;
 
-    public CommentDatabaseService(TodoListDbContext context)
+    public CommentDatabaseService(ApplicationDbContext context)
     {
         this.context = context;
     }

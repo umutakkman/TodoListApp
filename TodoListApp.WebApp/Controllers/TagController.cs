@@ -20,11 +20,14 @@ public class TagController : Controller
         foreach (var tag in tags)
         {
             var tasks = await this.tagWebApiService.GetTasksByTagAsync(tag.Id);
-            viewModelList.Add(new TagIndexViewModel
+            if (tasks.Any())
             {
-                Tag = tag,
-                TaskCount = tasks.Count(),
-            });
+                viewModelList.Add(new TagIndexViewModel
+                {
+                    Tag = tag,
+                    TaskCount = tasks.Count(),
+                });
+            }
         }
 
         return this.View(viewModelList);

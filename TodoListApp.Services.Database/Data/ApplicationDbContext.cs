@@ -1,11 +1,12 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TodoListApp.WebApi.Models.Entities;
 
 namespace TodoListApp.Services.Database.Data;
-
-public class TodoListDbContext : DbContext
+public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 {
-    public TodoListDbContext(DbContextOptions<TodoListDbContext> options)
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
     }
@@ -13,8 +14,6 @@ public class TodoListDbContext : DbContext
     public DbSet<TodoListEntity> TodoList { get; set; } = null!;
 
     public DbSet<TaskItemEntity> TaskItem { get; set; } = null!;
-
-    public DbSet<UserEntity> User { get; set; } = null!;
 
     public DbSet<CommentEntity> Comment { get; set; } = null!;
 

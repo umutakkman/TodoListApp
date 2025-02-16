@@ -5,37 +5,48 @@
 	ViewData["Title"] = "Tasks by Tag";
 }
 
-<h1>@ViewData["Title"]</h1>
-
-@if (!Model.Any())
-{
-	<p>No tasks found for this tag.</p>
-}
-else
-{
-	<table class="table table-striped">
-		<thead>
-			<tr>
-				<th>Title</th>
-				<th>Due Date</th>
-				<th>Status</th>
-				<th>Actions</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var task in Model)
+<div class="container my-5">
+	<div class="card shadow-sm border-0">
+		<div class="card-header bg-white border-bottom">
+			<h1 class="card-title mb-0">@ViewData["Title"]</h1>
+		</div>
+		<div class="card-body">
+			@if (!Model.Any())
 			{
-				<tr class="@(task.DueDate < DateTime.Now ? "table-danger" : "")">
-					<td>@task.Title</td>
-					<td>@task.DueDate.ToString("yyyy-MM-dd HH:mm")</td>
-					<td>@task.Status</td>
-					<td>
-						<a asp-controller="TaskItem" asp-action="Details" asp-route-id="@task.Id" class="btn btn-info btn-sm">Details</a>
-					</td>
-				</tr>
+				<p>No tasks found for this tag.</p>
 			}
-		</tbody>
-	</table>
-}
-
-<a asp-action="Index" class="btn btn-secondary">Back to All Tags</a>
+			else
+			{
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th scope="col">Title</th>
+							<th scope="col">Due Date</th>
+							<th scope="col">Status</th>
+							<th scope="col">Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var task in Model)
+						{
+							<tr class="@(task.DueDate < DateTime.Now ? "table-danger" : "")">
+								<td>@task.Title</td>
+								<td>@task.DueDate.ToString("yyyy-MM-dd HH:mm")</td>
+								<td>@task.Status</td>
+								<td>
+									<a asp-controller="TaskItem"
+									   asp-action="Details"
+									   asp-route-id="@task.Id"
+									   class="btn btn-outline-primary btn-sm">
+										Details
+									</a>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			}
+			<a asp-action="Index" class="btn btn-outline-secondary mt-3">Back to All Tags</a>
+		</div>
+	</div>
+</div>

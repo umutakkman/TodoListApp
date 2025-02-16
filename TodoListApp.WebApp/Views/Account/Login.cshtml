@@ -1,0 +1,47 @@
+@model TodoListApp.WebApi.Models.ViewModels.LoginViewModel
+
+@{
+	ViewData["Title"] = "Login";
+}
+
+<div class="container d-flex justify-content-center align-items-center vh-100">
+	<div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
+		<div class="card-body">
+			<h2 class="text-center mb-4">@ViewData["Title"]</h2>
+
+			<form asp-action="Login" method="post">
+				<div class="mb-3">
+					<label asp-for="Email" class="form-label"></label>
+					<input asp-for="Email" class="form-control" placeholder="Enter your email" />
+				</div>
+
+				<div class="mb-3">
+					<label asp-for="Password" class="form-label"></label>
+					<input asp-for="Password" type="password" class="form-control" placeholder="Enter your password" />
+				</div>
+
+				<div class="form-check mb-3">
+					<input asp-for="RememberMe" class="form-check-input" id="rememberMeCheck" />
+					<label asp-for="RememberMe" class="form-check-label" for="rememberMeCheck"></label>
+				</div>
+
+				<input type="hidden" asp-for="ReturnUrl" />
+
+				<div class="d-grid">
+					<button type="submit" class="btn btn-primary btn-lg">Login</button>
+				</div>
+
+				<div asp-validation-summary="All" class="text-danger mt-3"></div>
+			</form>
+			<div class="mt-3">
+				<a asp-action="ForgotPassword" asp-controller="Account" class="btn btn-link">Forgot your password?</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}
