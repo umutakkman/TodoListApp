@@ -211,6 +211,8 @@ namespace TodoListApp.WebApi.Controllers
         public IActionResult GetTasksByTag(int tagId)
         {
             var entities = this.taskItemDatabaseService.TaskItems
+                            .Include(t => t.Tags)
+                            .AsEnumerable()
                             .Where(t => t.Tags != null && t.Tags.Any(tag => tag.Id == tagId))
                             .ToList();
             var dtos = entities.Select(MapEntityToDto);
@@ -256,7 +258,13 @@ namespace TodoListApp.WebApi.Controllers
                 this.taskItemDatabaseService.UpdateTaskItem(task);
             }
 
-            return this.Ok(task.Tags);
+            var tagDtos = task.Tags.Select(t => new TagWebApiModel
+            {
+                Id = t.Id,
+                Name = t.Name,
+            });
+
+            return this.Ok(tagDtos);
         }
 
         /// <summary>

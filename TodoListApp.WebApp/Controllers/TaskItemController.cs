@@ -62,10 +62,14 @@ public class TaskItemController : Controller
             return this.NotFound();
         }
 
-        if (taskItem.UserId != this.userManager.GetUserId(this.User) && todoList.OwnerId != this.userManager.GetUserId(this.User))
+        var currentUserId = this.userManager.GetUserId(this.User);
+
+        if (taskItem.UserId != this.userManager.GetUserId(this.User) && todoList.OwnerId != currentUserId)
         {
             return this.Forbid();
         }
+
+        this.ViewBag.IsOwner = todoList.OwnerId == currentUserId;
 
         return this.View(taskItem);
     }

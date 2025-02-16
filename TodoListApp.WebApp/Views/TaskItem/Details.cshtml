@@ -1,7 +1,8 @@
 @model TodoListApp.WebApi.Models.ApiModels.TaskItemWebApiModel
-
+@using TaskStatus = TodoListApp.Common.TaskStatus;
 @{
 	ViewData["Title"] = "Task Item Details";
+	bool isOwner = ViewBag.IsOwner != null && (bool)ViewBag.IsOwner;
 }
 
 <div class="container my-5">
@@ -75,9 +76,13 @@
 			<hr />
 
 			<div>
-				<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
-				<a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
-				<a asp-controller="TodoList" asp-action="Details" asp-route-id="@Model.TodoListId" class="btn btn-secondary">Back to List</a>
+				@if (isOwner)
+				{
+					<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+					<a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+					<a asp-controller="TodoList" asp-action="Details" asp-route-id="@Model.TodoListId" class="btn btn-secondary">Back to List</a>
+				}
+				<a asp-controller="TaskItem" asp-action="Assigned" class="btn btn-secondary">Back to Assigned Tasks</a>
 			</div>
 		</div>
 	</div>
