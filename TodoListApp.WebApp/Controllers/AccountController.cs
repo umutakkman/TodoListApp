@@ -43,7 +43,7 @@ namespace TodoListApp.WebApp.Controllers
         /// <returns>The result of the registration process.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public IActionResult Register(RegisterViewModel model)
         {
             if (!this.ModelState.IsValid)
             {
@@ -58,7 +58,7 @@ namespace TodoListApp.WebApp.Controllers
 
             ArgumentNullException.ThrowIfNull(model);
 
-            return await this.RegisterUserAsync(model);
+            return this.RegisterUserAsync(model).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace TodoListApp.WebApp.Controllers
         /// <returns>The result of the login process.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public IActionResult Login(LoginViewModel model)
         {
             if (!this.ModelState.IsValid)
             {
@@ -100,7 +100,7 @@ namespace TodoListApp.WebApp.Controllers
 
             ArgumentNullException.ThrowIfNull(model);
 
-            return await this.HandleLoginAsync(model);
+            return this.HandleLoginAsync(model).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace TodoListApp.WebApp.Controllers
         /// <returns>The result of the forgot password process.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        public IActionResult ForgotPassword(ForgotPasswordViewModel model)
         {
             if (!this.ModelState.IsValid)
             {
@@ -147,7 +147,7 @@ namespace TodoListApp.WebApp.Controllers
 
             ArgumentNullException.ThrowIfNull(model);
 
-            return await this.HandleForgotPasswordAsync(model);
+            return this.HandleForgotPasswordAsync(model).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace TodoListApp.WebApp.Controllers
         /// <returns>The result of the reset password process.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        public IActionResult ResetPassword(ResetPasswordViewModel model)
         {
             if (!this.ModelState.IsValid)
             {
@@ -200,7 +200,7 @@ namespace TodoListApp.WebApp.Controllers
 
             ArgumentNullException.ThrowIfNull(model);
 
-            return await this.ResetPasswordAsync(model);
+            return this.ResetPasswordAsync(model).GetAwaiter().GetResult();
         }
 
         /// <summary>
