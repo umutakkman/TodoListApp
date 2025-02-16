@@ -11,11 +11,19 @@ namespace TodoListApp.WebApi.Controllers
     {
         private readonly ITagDatabaseService tagDatabaseService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TagController"/> class.
+        /// </summary>
+        /// <param name="tagDatabaseService">The tag database service.</param>
         public TagController(ITagDatabaseService tagDatabaseService)
         {
             this.tagDatabaseService = tagDatabaseService;
         }
 
+        /// <summary>
+        /// Gets the collection of tags.
+        /// </summary>
+        /// <returns>The collection of tags.</returns>
         [HttpGet]
         public ActionResult<IEnumerable<TagWebApiModel>> GetTags()
         {
@@ -26,6 +34,11 @@ namespace TodoListApp.WebApi.Controllers
             return this.Ok(tagDtos);
         }
 
+        /// <summary>
+        /// Maps a tag entity to a tag DTO.
+        /// </summary>
+        /// <param name="entity">The tag entity.</param>
+        /// <returns>The tag DTO.</returns>
         private static TagWebApiModel MapEntityToDto(TagEntity entity)
         {
             return new TagWebApiModel

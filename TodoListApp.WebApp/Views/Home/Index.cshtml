@@ -1,8 +1,43 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+	ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container-fluid p-5" style="background: linear-gradient(135deg, #4a90e2, #50e3c2); color: white;">
+	<div class="container text-center">
+		<h1 class="display-4 fw-bold">Welcome to TodoListApp</h1>
+		<p class="lead">Manage your tasks effortlessly and boost your productivity.</p>
+		<a href="/TodoList" class="btn btn-light btn-lg mt-3">Get Started</a>
+	</div>
+</div>
+
+<div class="container my-5">
+	<div class="row">
+		<div class="col-md-4">
+			<div class="card shadow-sm mb-4">
+				<div class="card-body text-center">
+					<i class="bi bi-check-circle-fill text-success display-4"></i>
+					<h5 class="card-title mt-3">Organize Tasks</h5>
+					<p class="card-text">Easily add, edit, and manage your tasks with our intuitive interface.</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="card shadow-sm mb-4">
+				<div class="card-body text-center">
+					<i class="bi bi-calendar2-check-fill text-warning display-4"></i>
+					<h5 class="card-title mt-3">Set Reminders</h5>
+					<p class="card-text">Never miss a deadline with built-in reminders and alerts.</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="card shadow-sm mb-4">
+				<div class="card-body text-center">
+					<i class="bi bi-graph-up-arrow text-info display-4"></i>
+					<h5 class="card-title mt-3">Track Progress</h5>
+					<p class="card-text">Visualize your progress and stay motivated with insightful analytics.</p>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>

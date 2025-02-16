@@ -10,7 +10,6 @@ using TodoListApp.WebApp.Email;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
-
 builder.Services.AddTransient<IEmailSender, MailKitEmailSender>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -29,6 +28,8 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LogoutPath = "/Account/Logout";
     options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
     options.SlidingExpiration = true;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
 builder.Services.AddControllersWithViews(options =>
@@ -85,12 +86,10 @@ builder.Services.AddHttpClient<ICommentWebApiService, CommentWebApiService>(clie
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     _ = app.UseExceptionHandler("/Home/Error");
 
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     _ = app.UseHsts();
 }
 

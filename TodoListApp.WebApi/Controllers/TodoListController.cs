@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoListApp.Services.Interfaces;
@@ -13,11 +12,19 @@ namespace TodoListApp.WebApi.Controllers
     {
         private readonly ITodoListDatabaseService todoListDatabaseService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TodoListController"/> class.
+        /// </summary>
+        /// <param name="todoListDatabaseService">The to-do list database service.</param>
         public TodoListController(ITodoListDatabaseService todoListDatabaseService)
         {
             this.todoListDatabaseService = todoListDatabaseService;
         }
 
+        /// <summary>
+        /// Gets the collection of to-do lists.
+        /// </summary>
+        /// <returns>The collection of to-do lists.</returns>
         [HttpGet]
         public ActionResult<IEnumerable<TodoListWebApiModel>> GetTodoLists()
         {
@@ -29,6 +36,11 @@ namespace TodoListApp.WebApi.Controllers
             return this.Ok(dtos);
         }
 
+        /// <summary>
+        /// Gets a to-do list by ID.
+        /// </summary>
+        /// <param name="id">The ID of the to-do list.</param>
+        /// <returns>The to-do list.</returns>
         [HttpGet("{id:int}")]
         public ActionResult<TodoListWebApiModel> GetTodoListById(int id)
         {
@@ -44,6 +56,11 @@ namespace TodoListApp.WebApi.Controllers
             return this.Ok(dto);
         }
 
+        /// <summary>
+        /// Creates a new to-do list.
+        /// </summary>
+        /// <param name="dto">The to-do list DTO.</param>
+        /// <returns>The created to-do list.</returns>
         [HttpPost]
         public ActionResult<TodoListWebApiModel> CreateTodoList(TodoListWebApiModel dto)
         {
@@ -60,6 +77,12 @@ namespace TodoListApp.WebApi.Controllers
             return this.CreatedAtAction(nameof(this.GetTodoListById), new { id = createdDto.Id }, createdDto);
         }
 
+        /// <summary>
+        /// Updates an existing to-do list.
+        /// </summary>
+        /// <param name="id">The ID of the to-do list.</param>
+        /// <param name="dto">The to-do list DTO.</param>
+        /// <returns>The updated to-do list.</returns>
         [HttpPut("{id:int}")]
         [ProducesResponseType(typeof(TodoListWebApiModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -97,6 +120,11 @@ namespace TodoListApp.WebApi.Controllers
             return this.Ok(updatedDto);
         }
 
+        /// <summary>
+        /// Deletes a to-do list.
+        /// </summary>
+        /// <param name="id">The ID of the to-do list.</param>
+        /// <returns>No content.</returns>
         [HttpDelete("{id:int}")]
         public IActionResult DeleteTodoList(int id)
         {
@@ -110,6 +138,11 @@ namespace TodoListApp.WebApi.Controllers
             return this.NoContent();
         }
 
+        /// <summary>
+        /// Maps a to-do list entity to a to-do list DTO.
+        /// </summary>
+        /// <param name="entity">The to-do list entity.</param>
+        /// <returns>The to-do list DTO.</returns>
         private static TodoListWebApiModel MapEntityToDto(TodoListEntity entity)
         {
             return new TodoListWebApiModel
@@ -132,6 +165,11 @@ namespace TodoListApp.WebApi.Controllers
             };
         }
 
+        /// <summary>
+        /// Maps a to-do list DTO to a to-do list entity.
+        /// </summary>
+        /// <param name="dto">The to-do list DTO.</param>
+        /// <returns>The to-do list entity.</returns>
         private static TodoListEntity MapDtoToEntity(TodoListWebApiModel dto)
         {
             return new TodoListEntity

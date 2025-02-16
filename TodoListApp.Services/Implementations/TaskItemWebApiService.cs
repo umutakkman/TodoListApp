@@ -5,15 +5,28 @@ using TodoListApp.WebApi.Models.ViewModels;
 using TaskStatus = TodoListApp.Common.TaskStatus;
 
 namespace TodoListApp.Services.Implementations;
+
+/// <summary>
+/// Service for managing task items via Web API.
+/// </summary>
 public class TaskItemWebApiService : ITaskItemWebApiService
 {
     private readonly HttpClient httpClient;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TaskItemWebApiService"/> class.
+    /// </summary>
+    /// <param name="httpClient">The HTTP client.</param>
     public TaskItemWebApiService(HttpClient httpClient)
     {
         this.httpClient = httpClient;
     }
 
+    /// <summary>
+    /// Gets a task item asynchronously.
+    /// </summary>
+    /// <param name="id">The ID of the task item.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the task item.</returns>
     public async Task<TaskItemWebApiModel> GetTaskItemAsync(int id)
     {
         var response = await this.httpClient.GetFromJsonAsync<TaskItemWebApiModel>($"api/TaskItem/{id}");
@@ -22,6 +35,11 @@ public class TaskItemWebApiService : ITaskItemWebApiService
         return response;
     }
 
+    /// <summary>
+    /// Creates a new task item asynchronously.
+    /// </summary>
+    /// <param name="taskItem">The task item to create.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the created task item.</returns>
     public async Task<TaskItemWebApiModel> CreateTaskItemAsync(TaskItemWebApiModel taskItem)
     {
         var response = await this.httpClient.PostAsJsonAsync("api/TaskItem", taskItem);
@@ -33,6 +51,11 @@ public class TaskItemWebApiService : ITaskItemWebApiService
         return createdtaskItem;
     }
 
+    /// <summary>
+    /// Deletes a task item asynchronously.
+    /// </summary>
+    /// <param name="id">The ID of the task item.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public async Task DeleteTaskItemAsync(int id)
     {
         var uri = new Uri($"api/TaskItem/{id}", UriKind.Relative);
@@ -40,6 +63,12 @@ public class TaskItemWebApiService : ITaskItemWebApiService
         _ = response.EnsureSuccessStatusCode();
     }
 
+    /// <summary>
+    /// Updates a task item asynchronously.
+    /// </summary>
+    /// <param name="id">The ID of the task item.</param>
+    /// <param name="taskItem">The task item to update.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the updated task item.</returns>
     public async Task<TaskItemWebApiModel> UpdateTaskItemAsync(int id, TaskItemWebApiModel taskItem)
     {
         var response = await this.httpClient.PutAsJsonAsync($"api/TaskItem/{id}", taskItem);
@@ -49,6 +78,11 @@ public class TaskItemWebApiService : ITaskItemWebApiService
         return updatedtaskItem;
     }
 
+    /// <summary>
+    /// Gets the tasks assigned to a specific user asynchronously.
+    /// </summary>
+    /// <param name="userId">The ID of the user.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the collection of assigned tasks.</returns>
     public async Task<IEnumerable<TaskItemWebApiModel>> GetAssignedTasksAsync(string userId)
     {
         var response = await this.httpClient.GetFromJsonAsync<IEnumerable<TaskItemWebApiModel>>($"api/TaskItem/assigned/{userId}");
@@ -56,6 +90,12 @@ public class TaskItemWebApiService : ITaskItemWebApiService
         return response;
     }
 
+    /// <summary>
+    /// Updates the status of a task item asynchronously.
+    /// </summary>
+    /// <param name="id">The ID of the task item.</param>
+    /// <param name="status">The new status of the task item.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the updated task item.</returns>
     public async Task<TaskItemWebApiModel> UpdateTaskStatusAsync(int id, TaskStatus status)
     {
         var model = new ChangeStatusViewModel
@@ -77,6 +117,11 @@ public class TaskItemWebApiService : ITaskItemWebApiService
         return updatedTask;
     }
 
+    /// <summary>
+    /// Gets tags for a specific task asynchronously.
+    /// </summary>
+    /// <param name="taskId">The ID of the task.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the collection of tags for the task.</returns>
     public async Task<IEnumerable<TagWebApiModel>> GetTagsForTaskAsync(int taskId)
     {
         var response = await this.httpClient.GetFromJsonAsync<IEnumerable<TagWebApiModel>>($"api/taskItem/{taskId}/tags");

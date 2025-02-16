@@ -15,6 +15,12 @@ namespace TodoListApp.WebApi.Controllers
         private readonly ITagDatabaseService tagDatabaseService;
         private readonly ICommentDatabaseService commentDatabaseService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TaskItemController"/> class.
+        /// </summary>
+        /// <param name="taskItemDatabaseService">The task item database service.</param>
+        /// <param name="tagDatabaseService">The tag database service.</param>
+        /// <param name="commentDatabaseService">The comment database service.</param>
         public TaskItemController(ITaskItemDatabaseService taskItemDatabaseService, ITagDatabaseService tagDatabaseService, ICommentDatabaseService commentDatabaseService)
         {
             this.taskItemDatabaseService = taskItemDatabaseService;
@@ -22,6 +28,11 @@ namespace TodoListApp.WebApi.Controllers
             this.commentDatabaseService = commentDatabaseService;
         }
 
+        /// <summary>
+        /// Gets a task item by ID.
+        /// </summary>
+        /// <param name="id">The ID of the task item.</param>
+        /// <returns>The task item.</returns>
         [HttpGet("{id:int}")]
         public ActionResult<TaskItemWebApiModel> GetTaskItemById(int id)
         {
@@ -40,6 +51,11 @@ namespace TodoListApp.WebApi.Controllers
             return this.Ok(dto);
         }
 
+        /// <summary>
+        /// Creates a new task item.
+        /// </summary>
+        /// <param name="dto">The task item DTO.</param>
+        /// <returns>The created task item.</returns>
         [HttpPost]
         public ActionResult<TaskItemWebApiModel> CreateTaskItem([FromBody] TaskItemWebApiModel dto)
         {
@@ -54,6 +70,12 @@ namespace TodoListApp.WebApi.Controllers
             return this.CreatedAtAction(nameof(this.GetTaskItemById), new { id = createdDto.Id }, createdDto);
         }
 
+        /// <summary>
+        /// Updates an existing task item.
+        /// </summary>
+        /// <param name="id">The ID of the task item.</param>
+        /// <param name="dto">The task item DTO.</param>
+        /// <returns>The updated task item.</returns>
         [ProducesResponseType(typeof(TaskItemWebApiModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -93,6 +115,11 @@ namespace TodoListApp.WebApi.Controllers
             return this.Ok(updatedDto);
         }
 
+        /// <summary>
+        /// Deletes a task item.
+        /// </summary>
+        /// <param name="id">The ID of the task item.</param>
+        /// <returns>No content.</returns>
         [HttpDelete("{id:int}")]
         public IActionResult DeleteTaskItem(int id)
         {
@@ -106,6 +133,11 @@ namespace TodoListApp.WebApi.Controllers
             return this.NoContent();
         }
 
+        /// <summary>
+        /// Gets the tasks assigned to a specific user.
+        /// </summary>
+        /// <param name="userId">The ID of the user.</param>
+        /// <returns>The collection of assigned tasks.</returns>
         [HttpGet("assigned/{userId}")]
         public ActionResult<IEnumerable<TaskItemWebApiModel>> GetAssignedTasks(string userId)
         {
@@ -114,6 +146,12 @@ namespace TodoListApp.WebApi.Controllers
             return this.Ok(dtos);
         }
 
+        /// <summary>
+        /// Updates the status of a task item.
+        /// </summary>
+        /// <param name="id">The ID of the task item.</param>
+        /// <param name="model">The change status view model.</param>
+        /// <returns>No content.</returns>
         [HttpPut("status/{id:int}")]
         public IActionResult UpdateTaskStatus(int id, [FromBody] ChangeStatusViewModel model)
         {
@@ -140,6 +178,11 @@ namespace TodoListApp.WebApi.Controllers
             return this.NoContent();
         }
 
+        /// <summary>
+        /// Gets the tags for a specific task.
+        /// </summary>
+        /// <param name="taskId">The ID of the task.</param>
+        /// <returns>The collection of tags for the task.</returns>
         [ProducesResponseType(typeof(IEnumerable<TagWebApiModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet("{taskId:int}/tags")]
@@ -157,6 +200,11 @@ namespace TodoListApp.WebApi.Controllers
             return this.Ok(tagDtos);
         }
 
+        /// <summary>
+        /// Gets the tasks by a specific tag.
+        /// </summary>
+        /// <param name="tagId">The ID of the tag.</param>
+        /// <returns>The collection of tasks associated with the tag.</returns>
         [ProducesResponseType(typeof(IEnumerable<TaskItemWebApiModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet("bytag/{tagId:int}")]
@@ -169,6 +217,12 @@ namespace TodoListApp.WebApi.Controllers
             return this.Ok(dtos);
         }
 
+        /// <summary>
+        /// Adds a tag to a task.
+        /// </summary>
+        /// <param name="taskId">The ID of the task.</param>
+        /// <param name="tagId">The ID of the tag.</param>
+        /// <returns>The updated collection of tags for the task.</returns>
         [ProducesResponseType(typeof(IEnumerable<TagWebApiModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -205,6 +259,12 @@ namespace TodoListApp.WebApi.Controllers
             return this.Ok(task.Tags);
         }
 
+        /// <summary>
+        /// Removes a tag from a task.
+        /// </summary>
+        /// <param name="taskId">The ID of the task.</param>
+        /// <param name="tagId">The ID of the tag.</param>
+        /// <returns>No content.</returns>
         [HttpDelete("{taskId:int}/tag/{tagId:int}")]
         public IActionResult RemoveTagFromTask(int taskId, int tagId)
         {
@@ -232,6 +292,12 @@ namespace TodoListApp.WebApi.Controllers
             return this.NoContent();
         }
 
+        /// <summary>
+        /// Gets a comment for a specific task.
+        /// </summary>
+        /// <param name="taskId">The ID of the task.</param>
+        /// <param name="commentId">The ID of the comment.</param>
+        /// <returns>The comment.</returns>
         [ProducesResponseType(typeof(IEnumerable<CommentWebApiModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet("{taskId:int}/comments/{commentId:int}")]
@@ -267,6 +333,12 @@ namespace TodoListApp.WebApi.Controllers
             return this.Ok(commentDto);
         }
 
+        /// <summary>
+        /// Adds a comment to a task.
+        /// </summary>
+        /// <param name="taskId">The ID of the task.</param>
+        /// <param name="dto">The comment DTO.</param>
+        /// <returns>The created comment.</returns>
         [ProducesResponseType(typeof(CommentEntity), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -309,6 +381,13 @@ namespace TodoListApp.WebApi.Controllers
             return this.Ok(commentDto);
         }
 
+        /// <summary>
+        /// Updates a comment on a task.
+        /// </summary>
+        /// <param name="taskId">The ID of the task.</param>
+        /// <param name="commentId">The ID of the comment.</param>
+        /// <param name="dto">The comment DTO.</param>
+        /// <returns>The updated comment.</returns>
         [ProducesResponseType(typeof(CommentWebApiModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -355,6 +434,12 @@ namespace TodoListApp.WebApi.Controllers
             return this.Ok(updatedDto);
         }
 
+        /// <summary>
+        /// Deletes a comment from a task.
+        /// </summary>
+        /// <param name="taskId">The ID of the task.</param>
+        /// <param name="commentId">The ID of the comment.</param>
+        /// <returns>No content.</returns>
         [HttpDelete("{taskId:int}/comments/{commentId:int}")]
         public IActionResult DeleteCommentFromTask(int taskId, int commentId)
         {
@@ -381,6 +466,11 @@ namespace TodoListApp.WebApi.Controllers
             return this.NoContent();
         }
 
+        /// <summary>
+        /// Maps a task item entity to a task item DTO.
+        /// </summary>
+        /// <param name="entity">The task item entity.</param>
+        /// <returns>The task item DTO.</returns>
         private static TaskItemWebApiModel MapEntityToDto(TaskItemEntity entity)
         {
             return new TaskItemWebApiModel
@@ -409,6 +499,11 @@ namespace TodoListApp.WebApi.Controllers
             };
         }
 
+        /// <summary>
+        /// Maps a task item DTO to a task item entity.
+        /// </summary>
+        /// <param name="dto">The task item DTO.</param>
+        /// <returns>The task item entity.</returns>
         private static TaskItemEntity MapDtoToEntity(TaskItemWebApiModel dto)
         {
             return new TaskItemEntity

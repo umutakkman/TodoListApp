@@ -12,7 +12,7 @@ using TodoListApp.Services.Database.Data;
 namespace TodoListApp.Services.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250216112826_InitialCreate")]
+    [Migration("20250216154412_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -222,6 +222,21 @@ namespace TodoListApp.Services.Database.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("TagEntityTaskItemEntity", b =>
+                {
+                    b.Property<int>("TagsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TaskItemsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("TagsId", "TaskItemsId");
+
+                    b.HasIndex("TaskItemsId");
+
+                    b.ToTable("TagEntityTaskItemEntity");
+                });
+
             modelBuilder.Entity("TodoListApp.WebApi.Models.Entities.CommentEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -266,12 +281,7 @@ namespace TodoListApp.Services.Database.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("TaskItemEntityId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("TaskItemEntityId");
 
                     b.ToTable("Tag");
                 });
@@ -397,6 +407,21 @@ namespace TodoListApp.Services.Database.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("TagEntityTaskItemEntity", b =>
+                {
+                    b.HasOne("TodoListApp.WebApi.Models.Entities.TagEntity", null)
+                        .WithMany()
+                        .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TodoListApp.WebApi.Models.Entities.TaskItemEntity", null)
+                        .WithMany()
+                        .HasForeignKey("TaskItemsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("TodoListApp.WebApi.Models.Entities.CommentEntity", b =>
                 {
                     b.HasOne("TodoListApp.WebApi.Models.Entities.TaskItemEntity", "TaskItem")
@@ -412,13 +437,6 @@ namespace TodoListApp.Services.Database.Migrations
                     b.Navigation("TaskItem");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("TodoListApp.WebApi.Models.Entities.TagEntity", b =>
-                {
-                    b.HasOne("TodoListApp.WebApi.Models.Entities.TaskItemEntity", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("TaskItemEntityId");
                 });
 
             modelBuilder.Entity("TodoListApp.WebApi.Models.Entities.TaskItemEntity", b =>
@@ -452,8 +470,6 @@ namespace TodoListApp.Services.Database.Migrations
             modelBuilder.Entity("TodoListApp.WebApi.Models.Entities.TaskItemEntity", b =>
                 {
                     b.Navigation("Comments");
-
-                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("TodoListApp.WebApi.Models.Entities.TodoListEntity", b =>

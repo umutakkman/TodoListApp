@@ -7,6 +7,10 @@ using TodoListApp.WebApi.Models.ViewModels;
 using TaskStatus = TodoListApp.Common.TaskStatus;
 
 namespace TodoListApp.WebApp.Controllers;
+
+/// <summary>
+/// Controller for managing task items.
+/// </summary>
 public class TaskItemController : Controller
 {
     private readonly ITaskItemWebApiService taskItemWebApiService;
@@ -15,6 +19,14 @@ public class TaskItemController : Controller
     private readonly ITodoListWebApiService todoListWebApiService;
     private readonly UserManager<IdentityUser> userManager;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TaskItemController"/> class.
+    /// </summary>
+    /// <param name="taskItemWebApiService">The task item Web API service.</param>
+    /// <param name="tagWebApiService">The tag Web API service.</param>
+    /// <param name="commentWebApiService">The comment Web API service.</param>
+    /// <param name="todoListWebApiService">The to-do list Web API service.</param>
+    /// <param name="userManager">The user manager.</param>
     public TaskItemController(ITaskItemWebApiService taskItemWebApiService, ITagWebApiService tagWebApiService, ICommentWebApiService commentWebApiService, ITodoListWebApiService todoListWebApiService, UserManager<IdentityUser> userManager)
     {
         this.taskItemWebApiService = taskItemWebApiService;
@@ -24,6 +36,11 @@ public class TaskItemController : Controller
         this.userManager = userManager;
     }
 
+    /// <summary>
+    /// Displays the details of a task item.
+    /// </summary>
+    /// <param name="id">The ID of the task item.</param>
+    /// <returns>The task item details view.</returns>
     public async Task<IActionResult> Details(int id)
     {
         if (!this.ModelState.IsValid)
@@ -53,6 +70,11 @@ public class TaskItemController : Controller
         return this.View(taskItem);
     }
 
+    /// <summary>
+    /// Displays the create task item page.
+    /// </summary>
+    /// <param name="todoListId">The ID of the to-do list.</param>
+    /// <returns>The create task item view.</returns>
     public async Task<IActionResult> Create(int todoListId)
     {
         if (!this.ModelState.IsValid)
@@ -88,6 +110,11 @@ public class TaskItemController : Controller
         return this.View(model);
     }
 
+    /// <summary>
+    /// Handles the create task item form submission.
+    /// </summary>
+    /// <param name="taskItem">The task item view model.</param>
+    /// <returns>The result of the create task item process.</returns>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(TaskItemWebApiModel taskItem)
@@ -101,6 +128,11 @@ public class TaskItemController : Controller
         return this.RedirectToAction(nameof(this.Details), new { id = createdTaskItem.Id });
     }
 
+    /// <summary>
+    /// Displays the edit task item page.
+    /// </summary>
+    /// <param name="id">The ID of the task item.</param>
+    /// <returns>The edit task item view.</returns>
     public async Task<IActionResult> Edit(int id)
     {
         if (!this.ModelState.IsValid)
@@ -130,6 +162,12 @@ public class TaskItemController : Controller
         return this.View(taskItem);
     }
 
+    /// <summary>
+    /// Handles the edit task item form submission.
+    /// </summary>
+    /// <param name="id">The ID of the task item.</param>
+    /// <param name="taskItem">The task item view model.</param>
+    /// <returns>The result of the edit task item process.</returns>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, TaskItemWebApiModel taskItem)
@@ -149,6 +187,11 @@ public class TaskItemController : Controller
         return this.RedirectToAction(nameof(this.Details), new { id = updatedTaskItem.Id });
     }
 
+    /// <summary>
+    /// Displays the delete task item page.
+    /// </summary>
+    /// <param name="id">The ID of the task item.</param>
+    /// <returns>The delete task item view.</returns>
     public async Task<IActionResult> Delete(int id)
     {
         if (!this.ModelState.IsValid)
@@ -176,6 +219,11 @@ public class TaskItemController : Controller
         return this.View(taskItem);
     }
 
+    /// <summary>
+    /// Handles the delete task item form submission.
+    /// </summary>
+    /// <param name="id">The ID of the task item.</param>
+    /// <returns>The result of the delete task item process.</returns>
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
@@ -196,6 +244,14 @@ public class TaskItemController : Controller
         return this.RedirectToAction("Details", "TodoList", new { id = todoListId });
     }
 
+    /// <summary>
+    /// Displays the assigned tasks page.
+    /// </summary>
+    /// <param name="status">The status of the tasks.</param>
+    /// <param name="sortBy">The field to sort by.</param>
+    /// <param name="sortOrder">The sort order.</param>
+    /// <param name="searchString">The search string.</param>
+    /// <returns>The assigned tasks view.</returns>
     public async Task<IActionResult> Assigned(string? status = null, string? sortBy = "name", string? sortOrder = "asc", string? searchString = null)
     {
         if (!this.ModelState.IsValid)
@@ -235,6 +291,12 @@ public class TaskItemController : Controller
         return this.View(viewModel);
     }
 
+    /// <summary>
+    /// Handles the update task status form submission.
+    /// </summary>
+    /// <param name="id">The ID of the task item.</param>
+    /// <param name="status">The new status of the task item.</param>
+    /// <returns>The result of the update task status process.</returns>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Assigned(int id, TaskStatus status)
@@ -253,6 +315,12 @@ public class TaskItemController : Controller
         return this.RedirectToAction("Assigned", new { userId = updatedTask.UserId });
     }
 
+    /// <summary>
+    /// Handles the add tag to task form submission.
+    /// </summary>
+    /// <param name="taskId">The ID of the task item.</param>
+    /// <param name="tagId">The ID of the tag.</param>
+    /// <returns>The result of the add tag to task process.</returns>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddTag(int taskId, int tagId)
@@ -283,6 +351,12 @@ public class TaskItemController : Controller
         return this.RedirectToAction(nameof(this.Details), new { id = taskId });
     }
 
+    /// <summary>
+    /// Handles the remove tag from task form submission.
+    /// </summary>
+    /// <param name="taskId">The ID of the task item.</param>
+    /// <param name="tagId">The ID of the tag.</param>
+    /// <returns>The result of the remove tag from task process.</returns>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> RemoveTag(int taskId, int tagId)
@@ -313,6 +387,12 @@ public class TaskItemController : Controller
         return this.RedirectToAction(nameof(this.Details), new { id = taskId });
     }
 
+    /// <summary>
+    /// Handles the add comment to task form submission.
+    /// </summary>
+    /// <param name="taskId">The ID of the task item.</param>
+    /// <param name="text">The text of the comment.</param>
+    /// <returns>The result of the add comment to task process.</returns>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddComment(int taskId, string text)
@@ -350,6 +430,12 @@ public class TaskItemController : Controller
         return this.RedirectToAction(nameof(this.Edit), new { id = taskId });
     }
 
+    /// <summary>
+    /// Handles the remove comment from task form submission.
+    /// </summary>
+    /// <param name="taskId">The ID of the task item.</param>
+    /// <param name="commentId">The ID of the comment.</param>
+    /// <returns>The result of the remove comment from task process.</returns>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> RemoveComment(int taskId, int commentId)
@@ -380,6 +466,12 @@ public class TaskItemController : Controller
         return this.RedirectToAction(nameof(this.Edit), new { id = taskId });
     }
 
+    /// <summary>
+    /// Displays the edit comment page.
+    /// </summary>
+    /// <param name="taskId">The ID of the task item.</param>
+    /// <param name="commentId">The ID of the comment.</param>
+    /// <returns>The edit comment view.</returns>
     public async Task<IActionResult> EditComment(int taskId, int commentId)
     {
         if (!this.ModelState.IsValid)
@@ -409,6 +501,11 @@ public class TaskItemController : Controller
         return this.View(comment);
     }
 
+    /// <summary>
+    /// Handles the edit comment form submission.
+    /// </summary>
+    /// <param name="comment">The comment view model.</param>
+    /// <returns>The result of the edit comment process.</returns>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditComment(CommentWebApiModel comment)

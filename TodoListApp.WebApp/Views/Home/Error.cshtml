@@ -1,0 +1,22 @@
+@model TodoListApp.WebApi.Models.ViewModels.ErrorViewModel
+
+@{
+	ViewData["Title"] = "Error";
+}
+
+<div class="container my-5">
+	<div class="card shadow-sm border-0">
+		<div class="card-header bg-danger text-white">
+			<h1 class="card-title mb-0">An error occurred</h1>
+		</div>
+		<div class="card-body">
+			<p>We're sorry, but something went wrong. Please try again later or contact support if the problem persists.</p>
+			@if (!string.IsNullOrEmpty(Model?.RequestId))
+			{
+				<p>
+					<strong>Request ID:</strong> <code>@Model.RequestId</code>
+				</p>
+			}
+		</div>
+	</div>
+</div>

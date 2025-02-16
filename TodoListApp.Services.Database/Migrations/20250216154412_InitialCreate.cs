@@ -49,6 +49,19 @@ namespace TodoListApp.Services.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Tag",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tag", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -233,22 +246,27 @@ namespace TodoListApp.Services.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tag",
+                name: "TagEntityTaskItemEntity",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    TaskItemEntityId = table.Column<int>(type: "int", nullable: true)
+                    TagsId = table.Column<int>(type: "int", nullable: false),
+                    TaskItemsId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tag", x => x.Id);
+                    table.PrimaryKey("PK_TagEntityTaskItemEntity", x => new { x.TagsId, x.TaskItemsId });
                     table.ForeignKey(
-                        name: "FK_Tag_TaskItem_TaskItemEntityId",
-                        column: x => x.TaskItemEntityId,
+                        name: "FK_TagEntityTaskItemEntity_Tag_TagsId",
+                        column: x => x.TagsId,
+                        principalTable: "Tag",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TagEntityTaskItemEntity_TaskItem_TaskItemsId",
+                        column: x => x.TaskItemsId,
                         principalTable: "TaskItem",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -301,9 +319,9 @@ namespace TodoListApp.Services.Database.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tag_TaskItemEntityId",
-                table: "Tag",
-                column: "TaskItemEntityId");
+                name: "IX_TagEntityTaskItemEntity_TaskItemsId",
+                table: "TagEntityTaskItemEntity",
+                column: "TaskItemsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TaskItem_TodoListId",
@@ -342,10 +360,13 @@ namespace TodoListApp.Services.Database.Migrations
                 name: "Comment");
 
             migrationBuilder.DropTable(
-                name: "Tag");
+                name: "TagEntityTaskItemEntity");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Tag");
 
             migrationBuilder.DropTable(
                 name: "TaskItem");

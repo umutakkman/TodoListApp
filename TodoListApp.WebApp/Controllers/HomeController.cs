@@ -1,32 +1,28 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TodoListApp.WebApp.Models;
+using TodoListApp.WebApi.Models.ViewModels;
 
 namespace TodoListApp.WebApp.Controllers;
 [AllowAnonymous]
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
-    {
-        _logger = logger;
-    }
-
+    /// <summary>
+    /// Displays the home page.
+    /// </summary>
+    /// <returns>The home page view.</returns>
     public IActionResult Index()
     {
-        return View();
+        return this.View();
     }
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
+    /// <summary>
+    /// Displays the error page.
+    /// </summary>
+    /// <returns>The error page view.</returns>
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return this.View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier });
     }
 }

@@ -6,6 +6,10 @@ namespace TodoListApp.Services.Database.Data
 {
     public static class SeedData
     {
+        /// <summary>
+        /// Initializes the database with seed data.
+        /// </summary>
+        /// <param name="serviceProvider">The service provider.</param>
         public static void Initialize(IServiceProvider serviceProvider)
         {
             using var context = new ApplicationDbContext(

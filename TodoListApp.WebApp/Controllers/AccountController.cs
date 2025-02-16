@@ -13,6 +13,12 @@ namespace TodoListApp.WebApp.Controllers
         private readonly SignInManager<IdentityUser> signInManager;
         private readonly IEmailSender emailSender;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AccountController"/> class.
+        /// </summary>
+        /// <param name="userManager">The user manager.</param>
+        /// <param name="signInManager">The sign-in manager.</param>
+        /// <param name="emailSender">The email sender.</param>
         public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IEmailSender emailSender)
         {
             this.userManager = userManager;
@@ -20,11 +26,20 @@ namespace TodoListApp.WebApp.Controllers
             this.emailSender = emailSender;
         }
 
+        /// <summary>
+        /// Displays the registration page.
+        /// </summary>
+        /// <returns>The registration view.</returns>
         public IActionResult Register()
         {
             return this.View();
         }
 
+        /// <summary>
+        /// Handles the registration form submission.
+        /// </summary>
+        /// <param name="model">The registration view model.</param>
+        /// <returns>The result of the registration process.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
@@ -53,12 +68,22 @@ namespace TodoListApp.WebApp.Controllers
             return this.View(model);
         }
 
+        /// <summary>
+        /// Displays the login page.
+        /// </summary>
+        /// <param name="returnUrl">The return URL.</param>
+        /// <returns>The login view.</returns>
         public IActionResult Login(string? returnUrl = null)
         {
             var model = new LoginViewModel { ReturnUrl = returnUrl };
             return this.View(model);
         }
 
+        /// <summary>
+        /// Handles the login form submission.
+        /// </summary>
+        /// <param name="model">The login view model.</param>
+        /// <returns>The result of the login process.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
@@ -86,6 +111,10 @@ namespace TodoListApp.WebApp.Controllers
             return this.View(model);
         }
 
+        /// <summary>
+        /// Logs out the current user.
+        /// </summary>
+        /// <returns>The login view.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
@@ -94,11 +123,20 @@ namespace TodoListApp.WebApp.Controllers
             return this.RedirectToAction("Login", "Account");
         }
 
+        /// <summary>
+        /// Displays the forgot password page.
+        /// </summary>
+        /// <returns>The forgot password view.</returns>
         public IActionResult ForgotPassword()
         {
             return this.View();
         }
 
+        /// <summary>
+        /// Handles the forgot password form submission.
+        /// </summary>
+        /// <param name="model">The forgot password view model.</param>
+        /// <returns>The result of the forgot password process.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
@@ -126,11 +164,21 @@ namespace TodoListApp.WebApp.Controllers
             return this.RedirectToAction(nameof(this.ForgotPasswordConfirmation));
         }
 
+        /// <summary>
+        /// Displays the forgot password confirmation page.
+        /// </summary>
+        /// <returns>The forgot password confirmation view.</returns>
         public IActionResult ForgotPasswordConfirmation()
         {
             return this.View();
         }
 
+        /// <summary>
+        /// Displays the reset password page.
+        /// </summary>
+        /// <param name="code">The reset code.</param>
+        /// <param name="email">The email address.</param>
+        /// <returns>The reset password view.</returns>
         public IActionResult ResetPassword(string code = null!, string email = null!)
         {
             if (code == null || email == null)
@@ -142,6 +190,11 @@ namespace TodoListApp.WebApp.Controllers
             return this.View(model);
         }
 
+        /// <summary>
+        /// Handles the reset password form submission.
+        /// </summary>
+        /// <param name="model">The reset password view model.</param>
+        /// <returns>The result of the reset password process.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
@@ -173,6 +226,10 @@ namespace TodoListApp.WebApp.Controllers
             return this.View(model);
         }
 
+        /// <summary>
+        /// Displays the reset password confirmation page.
+        /// </summary>
+        /// <returns>The reset password confirmation view.</returns>
         public IActionResult ResetPasswordConfirmation()
         {
             return this.View();
