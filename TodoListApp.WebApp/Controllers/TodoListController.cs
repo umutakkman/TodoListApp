@@ -126,7 +126,7 @@ public class TodoListController : Controller
 
         this.ViewData["IsEdit"] = true;
 
-        return this.View("TodoListForm", todoList);
+        return this.View(todoList);
     }
 
     /// <summary>
