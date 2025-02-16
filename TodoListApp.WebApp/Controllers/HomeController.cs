@@ -11,6 +11,7 @@ public class HomeController : Controller
     /// Displays the home page.
     /// </summary>
     /// <returns>The home page view.</returns>
+    [HttpGet]
     public IActionResult Index()
     {
         return this.View();
@@ -20,6 +21,7 @@ public class HomeController : Controller
     /// Displays the error page.
     /// </summary>
     /// <returns>The error page view.</returns>
+    [HttpGet]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

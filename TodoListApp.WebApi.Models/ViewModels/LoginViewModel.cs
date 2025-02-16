@@ -30,5 +30,5 @@ public class LoginViewModel
     /// <summary>
     /// Gets or sets the return URL.
     /// </summary>
-    public string? ReturnUrl { get; set; }
+    public Uri? ReturnUrl { get; set; }
 }

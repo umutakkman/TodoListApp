@@ -30,6 +30,7 @@ namespace TodoListApp.WebApp.Controllers
         /// Displays the registration page.
         /// </summary>
         /// <returns>The registration view.</returns>
+        [HttpGet]
         public IActionResult Register()
         {
             return this.View();
@@ -51,21 +52,7 @@ namespace TodoListApp.WebApp.Controllers
 
             ArgumentNullException.ThrowIfNull(model);
 
-            var user = new IdentityUser { UserName = model.Email, Email = model.Email };
-            var result = await this.userManager.CreateAsync(user, model.Password);
-
-            if (result.Succeeded)
-            {
-                await this.signInManager.SignInAsync(user, isPersistent: false);
-                return this.RedirectToAction("Index", "TodoList");
-            }
-
-            foreach (var error in result.Errors)
-            {
-                this.ModelState.AddModelError(string.Empty, error.Description);
-            }
-
-            return this.View(model);
+            return await this.RegisterUserAsync(model);
         }
 
         /// <summary>
@@ -73,8 +60,14 @@ namespace TodoListApp.WebApp.Controllers
         /// </summary>
         /// <param name="returnUrl">The return URL.</param>
         /// <returns>The login view.</returns>
-        public IActionResult Login(string? returnUrl = null)
+        [HttpGet]
+        public IActionResult Login(Uri? returnUrl = null)
         {
+            if (!this.ModelState.IsValid)
+            {
+                return this.View();
+            }
+
             var model = new LoginViewModel { ReturnUrl = returnUrl };
             return this.View(model);
         }
@@ -95,20 +88,7 @@ namespace TodoListApp.WebApp.Controllers
 
             ArgumentNullException.ThrowIfNull(model);
 
-            var result = await this.signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-
-            if (result.Succeeded)
-            {
-                if (!string.IsNullOrEmpty(model.ReturnUrl) && this.Url.IsLocalUrl(model.ReturnUrl))
-                {
-                    return this.Redirect(model.ReturnUrl);
-                }
-
-                return this.RedirectToAction("Index", "TodoList");
-            }
-
-            this.ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-            return this.View(model);
+            return await this.HandleLoginAsync(model);
         }
 
         /// <summary>
@@ -127,6 +107,7 @@ namespace TodoListApp.WebApp.Controllers
         /// Displays the forgot password page.
         /// </summary>
         /// <returns>The forgot password view.</returns>
+        [HttpGet]
         public IActionResult ForgotPassword()
         {
             return this.View();
@@ -148,26 +129,14 @@ namespace TodoListApp.WebApp.Controllers
 
             ArgumentNullException.ThrowIfNull(model);
 
-            var user = await this.userManager.FindByEmailAsync(model.Email);
-            if (user == null)
-            {
-                return this.RedirectToAction(nameof(this.ForgotPasswordConfirmation));
-            }
-
-            var token = await this.userManager.GeneratePasswordResetTokenAsync(user);
-            var callbackUrl = this.Url.Action(nameof(this.ResetPassword), "Account", new { code = token, email = model.Email }, protocol: this.Request.Scheme);
-
-            var emailSubject = "Reset Password";
-            var emailMessage = $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>";
-            await this.emailSender.SendEmailAsync(model.Email, emailSubject, emailMessage);
-
-            return this.RedirectToAction(nameof(this.ForgotPasswordConfirmation));
+            return await this.HandleForgotPasswordAsync(model);
         }
 
         /// <summary>
         /// Displays the forgot password confirmation page.
         /// </summary>
         /// <returns>The forgot password confirmation view.</returns>
+        [HttpGet]
         public IActionResult ForgotPasswordConfirmation()
         {
             return this.View();
@@ -179,6 +148,7 @@ namespace TodoListApp.WebApp.Controllers
         /// <param name="code">The reset code.</param>
         /// <param name="email">The email address.</param>
         /// <returns>The reset password view.</returns>
+        [HttpGet]
         public IActionResult ResetPassword(string code = null!, string email = null!)
         {
             if (code == null || email == null)
@@ -206,6 +176,96 @@ namespace TodoListApp.WebApp.Controllers
 
             ArgumentNullException.ThrowIfNull(model);
 
+            return await this.ResetPasswordAsync(model);
+        }
+
+        /// <summary>
+        /// Displays the reset password confirmation page.
+        /// </summary>
+        /// <returns>The reset password confirmation view.</returns>
+        [HttpGet]
+        public IActionResult ResetPasswordConfirmation()
+        {
+            return this.View();
+        }
+
+        /// <summary>
+        /// Registers a new user asynchronously.
+        /// </summary>
+        /// <param name="model">The registration view model.</param>
+        /// <returns>The result of the registration process.</returns>
+        private async Task<IActionResult> RegisterUserAsync(RegisterViewModel model)
+        {
+            var user = new IdentityUser { UserName = model.Email, Email = model.Email };
+            var result = await this.userManager.CreateAsync(user, model.Password);
+
+            if (result.Succeeded)
+            {
+                await this.signInManager.SignInAsync(user, isPersistent: false);
+                return this.RedirectToAction("Index", "TodoList");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                this.ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return this.View("Register", model);
+        }
+
+        /// <summary>
+        /// Handles the login process asynchronously.
+        /// </summary>
+        /// <param name="model">The login view model.</param>
+        /// <returns>The result of the login process.</returns>
+        private async Task<IActionResult> HandleLoginAsync(LoginViewModel model)
+        {
+            var result = await this.signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+
+            if (result.Succeeded)
+            {
+                if (model.ReturnUrl != null && this.Url.IsLocalUrl(model.ReturnUrl.ToString()))
+                {
+                    return this.Redirect(model.ReturnUrl.ToString());
+                }
+
+                return this.RedirectToAction("Index", "TodoList");
+            }
+
+            this.ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            return this.View("Login", model);
+        }
+
+        /// <summary>
+        /// Handles the forgot password process asynchronously.
+        /// </summary>
+        /// <param name="model">The forgot password view model.</param>
+        /// <returns>The result of the forgot password process.</returns>
+        private async Task<IActionResult> HandleForgotPasswordAsync(ForgotPasswordViewModel model)
+        {
+            var user = await this.userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return this.RedirectToAction(nameof(this.ForgotPasswordConfirmation));
+            }
+
+            var token = await this.userManager.GeneratePasswordResetTokenAsync(user);
+            var callbackUrl = this.Url.Action(nameof(this.ResetPassword), "Account", new { code = token, email = model.Email }, protocol: this.Request.Scheme);
+
+            var emailSubject = "Reset Password";
+            var emailMessage = $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>";
+            await this.emailSender.SendEmailAsync(model.Email, emailSubject, emailMessage);
+
+            return this.RedirectToAction(nameof(this.ForgotPasswordConfirmation));
+        }
+
+        /// <summary>
+        /// Handles the reset password process asynchronously.
+        /// </summary>
+        /// <param name="model">The reset password view model.</param>
+        /// <returns>The result of the reset password process.</returns>
+        private async Task<IActionResult> ResetPasswordAsync(ResetPasswordViewModel model)
+        {
             var user = await this.userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
@@ -223,16 +283,7 @@ namespace TodoListApp.WebApp.Controllers
                 this.ModelState.AddModelError(string.Empty, error.Description);
             }
 
-            return this.View(model);
-        }
-
-        /// <summary>
-        /// Displays the reset password confirmation page.
-        /// </summary>
-        /// <returns>The reset password confirmation view.</returns>
-        public IActionResult ResetPasswordConfirmation()
-        {
-            return this.View();
+            return this.View("ResetPassword", model);
         }
     }
 }

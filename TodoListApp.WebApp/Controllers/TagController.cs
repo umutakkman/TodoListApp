@@ -3,6 +3,7 @@ using TodoListApp.Services.Interfaces;
 using TodoListApp.WebApi.Models.ViewModels;
 
 namespace TodoListApp.WebApp.Controllers;
+
 /// <summary>
 /// Controller for managing tags.
 /// </summary>
@@ -23,6 +24,7 @@ public class TagController : Controller
     /// Displays the list of tags.
     /// </summary>
     /// <returns>The view with the list of tags.</returns>
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
         var tags = await this.tagWebApiService.GetAllTagsAsync();
@@ -49,6 +51,7 @@ public class TagController : Controller
     /// </summary>
     /// <param name="tagId">The ID of the tag.</param>
     /// <returns>The view with the list of tasks associated with the tag.</returns>
+    [HttpGet]
     public async Task<IActionResult> TasksByTag(int tagId)
     {
         if (!this.ModelState.IsValid)

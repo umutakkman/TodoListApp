@@ -29,6 +29,7 @@ public class TodoListController : Controller
     /// Displays the list of to-do lists.
     /// </summary>
     /// <returns>The view with the list of to-do lists.</returns>
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
         var todoLists = await this.todoListWebApiService.GetTodoListsAsync();
@@ -41,6 +42,7 @@ public class TodoListController : Controller
     /// </summary>
     /// <param name="id">The ID of the to-do list.</param>
     /// <returns>The to-do list details view.</returns>
+    [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
         if (!this.ModelState.IsValid)
@@ -60,6 +62,8 @@ public class TodoListController : Controller
             return this.Forbid();
         }
 
+        this.ViewData["IsDetails"] = true;
+
         return this.View(todoList);
     }
 
@@ -67,6 +71,7 @@ public class TodoListController : Controller
     /// Displays the create to-do list page.
     /// </summary>
     /// <returns>The create to-do list view.</returns>
+    [HttpGet]
     public IActionResult Create()
     {
         return this.View();
@@ -86,18 +91,13 @@ public class TodoListController : Controller
             return this.BadRequest(this.ModelState);
         }
 
-        var ownerId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(ownerId))
+        var validationResult = this.ValidateCreateParameters(todoList);
+        if (validationResult != null)
         {
-            return this.BadRequest("Invalid owner ID.");
+            return validationResult;
         }
 
-        ArgumentNullException.ThrowIfNull(todoList);
-
-        todoList.OwnerId = ownerId;
-
-        var createdTodoList = await this.todoListWebApiService.CreateTodoListAsync(todoList);
-        return this.RedirectToAction(nameof(this.Details), new { id = createdTodoList.Id });
+        return await this.HandleCreateAsync(todoList);
     }
 
     /// <summary>
@@ -105,6 +105,7 @@ public class TodoListController : Controller
     /// </summary>
     /// <param name="id">The ID of the to-do list.</param>
     /// <returns>The edit to-do list view.</returns>
+    [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
         if (!this.ModelState.IsValid)
@@ -123,7 +124,9 @@ public class TodoListController : Controller
             return this.Forbid();
         }
 
-        return this.View(todoList);
+        this.ViewData["IsEdit"] = true;
+
+        return this.View("TodoListForm", todoList);
     }
 
     /// <summary>
@@ -160,6 +163,7 @@ public class TodoListController : Controller
     /// </summary>
     /// <param name="id">The ID of the to-do list.</param>
     /// <returns>The delete to-do list view.</returns>
+    [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
         if (!this.ModelState.IsValid)
@@ -177,6 +181,8 @@ public class TodoListController : Controller
         {
             return this.Forbid();
         }
+
+        this.ViewData["IsDelete"] = true;
 
         return this.View(todoList);
     }
@@ -197,5 +203,40 @@ public class TodoListController : Controller
 
         await this.todoListWebApiService.DeleteTodoListAsync(id);
         return this.RedirectToAction(nameof(this.Index));
+    }
+
+    /// <summary>
+    /// Validates the parameters for creating a to-do list.
+    /// </summary>
+    /// <param name="todoList">The to-do list view model.</param>
+    /// <returns>A <see cref="BadRequestObjectResult"/> if validation fails; otherwise, null.</returns>
+    private BadRequestObjectResult? ValidateCreateParameters(TodoListWebApiModel todoList)
+    {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest(this.ModelState);
+        }
+
+        var ownerId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(ownerId))
+        {
+            return this.BadRequest("Invalid owner ID.");
+        }
+
+        ArgumentNullException.ThrowIfNull(todoList);
+        todoList.OwnerId = ownerId;
+
+        return null;
+    }
+
+    /// <summary>
+    /// Handles the create to-do list process asynchronously.
+    /// </summary>
+    /// <param name="todoList">The to-do list view model.</param>
+    /// <returns>The result of the create to-do list process.</returns>
+    private async Task<IActionResult> HandleCreateAsync(TodoListWebApiModel todoList)
+    {
+        var createdTodoList = await this.todoListWebApiService.CreateTodoListAsync(todoList);
+        return this.RedirectToAction(nameof(this.Details), new { id = createdTodoList.Id });
     }
 }

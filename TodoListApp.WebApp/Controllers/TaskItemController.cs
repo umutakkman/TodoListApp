@@ -41,6 +41,7 @@ public class TaskItemController : Controller
     /// </summary>
     /// <param name="id">The ID of the task item.</param>
     /// <returns>The task item details view.</returns>
+    [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
         if (!this.ModelState.IsValid)
@@ -79,6 +80,7 @@ public class TaskItemController : Controller
     /// </summary>
     /// <param name="todoListId">The ID of the to-do list.</param>
     /// <returns>The create task item view.</returns>
+    [HttpGet]
     public async Task<IActionResult> Create(int todoListId)
     {
         if (!this.ModelState.IsValid)
@@ -137,6 +139,7 @@ public class TaskItemController : Controller
     /// </summary>
     /// <param name="id">The ID of the task item.</param>
     /// <returns>The edit task item view.</returns>
+    [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
         if (!this.ModelState.IsValid)
@@ -176,19 +179,18 @@ public class TaskItemController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, TaskItemWebApiModel taskItem)
     {
-        ArgumentNullException.ThrowIfNull(taskItem);
         if (!this.ModelState.IsValid)
         {
             return this.BadRequest(this.ModelState);
         }
 
-        if (id != taskItem.Id)
+        var validationResult = this.ValidateEditParameters(id, taskItem);
+        if (validationResult != null)
         {
-            return this.BadRequest("ID mismatch.");
+            return validationResult;
         }
 
-        var updatedTaskItem = await this.taskItemWebApiService.UpdateTaskItemAsync(id, taskItem);
-        return this.RedirectToAction(nameof(this.Details), new { id = updatedTaskItem.Id });
+        return await this.HandleEditAsync(id, taskItem);
     }
 
     /// <summary>
@@ -196,6 +198,7 @@ public class TaskItemController : Controller
     /// </summary>
     /// <param name="id">The ID of the task item.</param>
     /// <returns>The delete task item view.</returns>
+    [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
         if (!this.ModelState.IsValid)
@@ -256,6 +259,7 @@ public class TaskItemController : Controller
     /// <param name="sortOrder">The sort order.</param>
     /// <param name="searchString">The search string.</param>
     /// <returns>The assigned tasks view.</returns>
+    [HttpGet]
     public async Task<IActionResult> Assigned(string? status = null, string? sortBy = "name", string? sortOrder = "asc", string? searchString = null)
     {
         if (!this.ModelState.IsValid)
@@ -476,6 +480,7 @@ public class TaskItemController : Controller
     /// <param name="taskId">The ID of the task item.</param>
     /// <param name="commentId">The ID of the comment.</param>
     /// <returns>The edit comment view.</returns>
+    [HttpGet]
     public async Task<IActionResult> EditComment(int taskId, int commentId)
     {
         if (!this.ModelState.IsValid)
@@ -514,12 +519,77 @@ public class TaskItemController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditComment(CommentWebApiModel comment)
     {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest(this.ModelState);
+        }
+
+        var validationResult = this.ValidateEditCommentParameters(comment);
+        if (validationResult != null)
+        {
+            return validationResult;
+        }
+
+        return await this.HandleEditCommentAsync(comment);
+    }
+
+    /// <summary>
+    /// Validates the parameters for editing a task item.
+    /// </summary>
+    /// <param name="id">The ID of the task item.</param>
+    /// <param name="taskItem">The task item view model.</param>
+    /// <returns>A <see cref="BadRequestObjectResult"/> if validation fails; otherwise, null.</returns>
+    private BadRequestObjectResult? ValidateEditParameters(int id, TaskItemWebApiModel taskItem)
+    {
+        ArgumentNullException.ThrowIfNull(taskItem);
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest(this.ModelState);
+        }
+
+        if (id != taskItem.Id)
+        {
+            return this.BadRequest("ID mismatch.");
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Handles the edit task item process asynchronously.
+    /// </summary>
+    /// <param name="id">The ID of the task item.</param>
+    /// <param name="taskItem">The task item view model.</param>
+    /// <returns>The result of the edit task item process.</returns>
+    private async Task<IActionResult> HandleEditAsync(int id, TaskItemWebApiModel taskItem)
+    {
+        var updatedTaskItem = await this.taskItemWebApiService.UpdateTaskItemAsync(id, taskItem);
+        return this.RedirectToAction(nameof(this.Details), new { id = updatedTaskItem.Id });
+    }
+
+    /// <summary>
+    /// Validates the parameters for editing a comment.
+    /// </summary>
+    /// <param name="comment">The comment view model.</param>
+    /// <returns>A <see cref="ViewResult"/> if validation fails; otherwise, null.</returns>
+    private ViewResult? ValidateEditCommentParameters(CommentWebApiModel comment)
+    {
         ArgumentNullException.ThrowIfNull(comment);
         if (!this.ModelState.IsValid)
         {
             return this.View(comment);
         }
 
+        return null;
+    }
+
+    /// <summary>
+    /// Handles the edit comment process asynchronously.
+    /// </summary>
+    /// <param name="comment">The comment view model.</param>
+    /// <returns>The result of the edit comment process.</returns>
+    private async Task<IActionResult> HandleEditCommentAsync(CommentWebApiModel comment)
+    {
         _ = await this.commentWebApiService.UpdateCommentAsync(comment.TaskItemId, comment.Id, comment);
         return this.RedirectToAction("Edit", new { id = comment.TaskItemId });
     }
