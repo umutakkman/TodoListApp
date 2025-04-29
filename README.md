@@ -60,36 +60,39 @@ The system follows a layered architecture with clear separation of concerns:
 
 - [.NET 6 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
 - [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (or SQL Server Express)
-- [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) (recommended) or any other code editor
-
 ### Installation
 
 1. Clone the repository:
    
 
-git clone https://github.com/yourusername/todo-list-app.git
+```bash
+git clone https://github.com/umutakkman/TodoListApp.git
 cd todo-list-app
+```
 
 
-2. Set up the database connection string in the `appsettings.json` file of the TodoListApp.WebApi project.
+2. Set up the database connection string in the [appsettings.json](TodoListApp.WebApi/appsettings.json) file of the TodoListApp.WebApi project.
 
 3. Apply database migrations:
 
+```bash
 cd TodoListApp.WebApi
 dotnet ef database update
+```
 
 
 4. Run the Web API project:
 
+```bash
 dotnet run
-
+```
 
 5. In another terminal, run the Web Application:
 
+```bash
 cd ../TodoListApp.WebApp
 dotnet run
-
-
+```
 
 6. Navigate to `https://localhost:5001` in your browser to use the application.
 
@@ -106,15 +109,6 @@ dotnet run
   - Models: Request and response models
   - Services: Business logic implementation
   - Data: Entity Framework context and entity models
-
-## Development Guidelines
-
-- Follow the RESTful API principles for all API endpoints
-- Implement proper error handling with meaningful HTTP status codes
-- Use dependency injection for service resolution
-- Document public classes and methods with XML comments
-- Follow code quality standards enforced by StyleCop and .NET analyzers
-- Use Entity Framework migrations for database schema updates
 
 ## Code Quality
 
