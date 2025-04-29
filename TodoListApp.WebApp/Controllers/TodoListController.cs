@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Services.Interfaces;
 using TodoListApp.WebApi.Models.ApiModels;
+using TaskStatus = TodoListApp.Common.TaskStatus;
 
 namespace TodoListApp.WebApp.Controllers;
 
@@ -13,16 +14,18 @@ public class TodoListController : Controller
 {
     private readonly ITodoListWebApiService todoListWebApiService;
     private readonly UserManager<IdentityUser> userManager;
+    private readonly ITaskItemWebApiService taskItemWebApiService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TodoListController"/> class.
     /// </summary>
     /// <param name="todoListWebApiService">The to-do list Web API service.</param>
     /// <param name="userManager">The user manager.</param>
-    public TodoListController(ITodoListWebApiService todoListWebApiService, UserManager<IdentityUser> userManager)
+    public TodoListController(ITodoListWebApiService todoListWebApiService, UserManager<IdentityUser> userManager, ITaskItemWebApiService taskItemWebApiService)
     {
         this.todoListWebApiService = todoListWebApiService;
         this.userManager = userManager;
+        this.taskItemWebApiService = taskItemWebApiService;
     }
 
     /// <summary>
@@ -203,6 +206,32 @@ public class TodoListController : Controller
 
         await this.todoListWebApiService.DeleteTodoListAsync(id);
         return this.RedirectToAction(nameof(this.Index));
+    }
+
+    /// <summary>
+    /// Updates the status of a task and redirects back to the TodoList details.
+    /// </summary>
+    /// <param name="id">The ID of the task item.</param>
+    /// <param name="status">The new status of the task item.</param>
+    /// <param name="todoListId">The ID of the to-do list to redirect back to.</param>
+    /// <returns>The result of the update task status process.</returns>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateStatus(int id, TaskStatus status, int todoListId)
+    {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest(this.ModelState);
+        }
+
+        var updatedTask = await this.taskItemWebApiService.UpdateTaskStatusAsync(id, status);
+        if (updatedTask == null)
+        {
+            return this.NotFound();
+        }
+
+        // Redirect back to the TodoList details page
+        return this.RedirectToAction("Details", "TodoList", new { id = todoListId });
     }
 
     /// <summary>

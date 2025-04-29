@@ -1,74 +1,125 @@
-# To-do List Application
+# Todo List Application
 
-In this project, you must design and develop a web application according to the requirements that are specified in the task description.
-  * The application you have to develop must contain two web components - a web and a web API applications.
-  * The web application is a [ASP.NET Core MVC application](https://learn.microsoft.com/en-us/aspnet/core/mvc/overview).
-  * The web API application is a [controller-based ASP.NET Core Web API application](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/apis).
-  * The data store must be a relational database management system such as SQL Server Express.
-  * To access application data the application must use [Entity Framework Core](https://learn.microsoft.com/en-us/ef/core/).
-  * The application must use the [ASP.NET Core Identity API](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity) to manage users, passwords and profile data.
+A comprehensive ASP.NET Core application for managing to-do lists and tasks with a user-friendly interface and RESTful API backend.
+
+## Overview
+
+This Todo List Application is a full-stack web application built using ASP.NET Core 6.0 that allows users to create, manage, and organize their tasks in customizable to-do lists. The application follows a modern architecture with separate frontend and backend components for scalability and maintainability.
+
+## Architecture
+
+The solution consists of two main applications:
+
+- **TodoListApp.WebApp**: An ASP.NET Core MVC application providing the user interface
+- **TodoListApp.WebApi**: A RESTful Web API application that handles data operations
+
+The system follows a layered architecture with clear separation of concerns:
+- Presentation Layer (Web UI)
+- Service Layer (APIs and business logic)
+- Data Access Layer (Entity Framework Core)
+
+## Technologies
+
+- **.NET 6**: Modern, cross-platform framework for building web applications
+- **ASP.NET Core MVC**: For building the user interface
+- **ASP.NET Core Web API**: For the RESTful backend services
+- **Entity Framework Core**: ORM for database operations using a code-first approach
+- **SQL Server**: Database for storing application data
+- **ASP.NET Core Identity**: For user authentication and authorization
+- **JSON Web Tokens (JWT)**: For securing the API with bearer authentication
+
+## Features
+
+- **To-do List Management**:
+  - View all to-do lists
+  - Create new to-do lists
+  - Edit existing to-do lists
+  - Delete to-do lists
+
+- **Task Management**:
+  - View tasks within a list
+  - View detailed task information
+  - Add new tasks to lists
+  - Edit task details
+  - Mark tasks as completed
+  - Delete tasks
+
+- **User Authentication**:
+  - User registration
+  - User login/logout
+  - User profile management
+  - Access control to user-specific lists and tasks
+
+- **Responsive UI**:
+  - Modern, intuitive user interface
+  - Mobile-friendly design
+
+## Getting Started
+
+### Prerequisites
+
+- [.NET 6 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
+- [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (or SQL Server Express)
+- [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) (recommended) or any other code editor
+
+### Installation
+
+1. Clone the repository:
+   
+
+git clone https://github.com/yourusername/todo-list-app.git
+cd todo-list-app
 
 
-## Backlog
+2. Set up the database connection string in the `appsettings.json` file of the TodoListApp.WebApi project.
 
-The application functional requirements are described in the [Functional Requirements](functional-requirements.md) document.
+3. Apply database migrations:
 
-The [backlog with the user stories](https://en.wikipedia.org/wiki/Product_backlog) you need to implement is given in the table below. The full list of user stories with descriptions is in the [User Stories](user-stories.md) document.
-
-Here are some hints for you:
-* Follow the priority order. Start working on user stories in the order listed in the "Priority" column.
-* Mark stories as completed in the [README.md](README.md) file. Once you've finished developing a user story, mark it as completed in the "Is completed?" column (use the "+" or any other text). This mark will help the mentor who will review your project understand which functionality is implemented and which is not.
-* Focus on quality. Implement as many user stories as possible, but if you see that you do not have enough time to complete lower-priority user stories, polish the user stories you have already completed.
-
-| Epic | User Story | Description                                                                     | Priority | Is completed? |
-|------|------------|---------------------------------------------------------------------------------|----------|---------------|
-| EP01 | US01       | View the list of my to-do lists.                                                | 1        |               |
-| EP01 | US02       | Add a new to-do list.                                                           | 1        |               |
-| EP01 | US03       | Delete a to-do list.                                                            | 1        |               |
-| EP01 | US04       | Edit a to-do list.                                                              | 1        |               |
-| EP02 | US05       | View the list of tasks in a to-do list.                                         | 1        |               |
-| EP02 | US06       | View the task details page.                                                     | 1        |               |
-| EP02 | US07       | Add a new to-do task.                                                           | 1        |               |
-| EP02 | US08       | Delete a to-do task.                                                            | 1        |               |
-| EP02 | US09       | Edit a to-do task.                                                              | 1        |               |
-| EP02 | US10       | Highlight tasks that are overdue.                                               | 1        |               |
-| EP03 | US11       | View a list of tasks assigned to me.                                            | 2        |               |
-| EP03 | US12       | Filter tasks in my assigned task list.                                          | 2        |               |
-| EP03 | US13       | Sort tasks in my assigned task list.                                            | 2        |               |
-| EP03 | US14       | Change the status of a task from the list of assigned tasks.                    | 2        |               |
-| EP04 | US15       | Search for tasks with specified text in the task title.                         | 3        |               |
-| EP04 | US16       | Highlight tasks that are overdue on the search result page.                     | 3        |               |
-| EP05 | US17       | View a list of tags on the task details page.                                   | 5        |               |
-| EP05 | US18       | View a list of all tags.                                                        | 5        |               |
-| EP05 | US19       | View a list of tasks tagged by a specific tag.                                  | 5        |               |
-| EP05 | US20       | Add a tag to a task.                                                            | 5        |               |
-| EP05 | US21       | Remove a tag that is added to a task.                                           | 5        |               |
-| EP06 | US22       | View the comments on the task details page.                                     | 6        |               |
-| EP06 | US23       | Add a new comment to the task.                                                  | 6        |               |
-| EP06 | US24       | Delete a comment that is added to a task.                                       | 6        |               |
-| EP06 | US25       | Edit a new comment                                                              | 6        |               |
-| EP07 | US26       | Sign up                                                                         | 7        |               |
-| EP07 | US27       | Sign in                                                                         | 7        |               |
-| EP07 | US28       | Sign out                                                                        | 7        |               |
-| EP07 | US29       | Restore password                                                                | 8        |               |
-| EP08 | US30       | Application menu                                                                | 4        |               |
+cd TodoListApp.WebApi
+dotnet ef database update
 
 
-## Software Architecture
+4. Run the Web API project:
 
-The architecture of the application is described in the [Software Architecture](software-architecture.md) document.
-
-
-## Solution Requirements
-
-The requirements for the application are described in the [Solution Requirements](solution-requirements.md) document.
+dotnet run
 
 
-## Delivery Plan
+5. In another terminal, run the Web Application:
 
-The [delivery plan](delivery-plan.md) contains the list of technical tasks distributed over the weeks these tasks must be delivered.
+cd ../TodoListApp.WebApp
+dotnet run
 
 
-## Project Evaluation
 
-The project is evaluated using both technical evaluation criteria and an assessment of the scope and quality of the implementation of user stories. Both technical evaluation criteria and criteria for user stories are described in [Project Evaluation](project-evaluation.md) document.
+6. Navigate to `https://localhost:5001` in your browser to use the application.
+
+## Project Structure
+
+- **TodoListApp.WebApp**: Frontend MVC application
+  - Controllers: Handles HTTP requests and user interactions
+  - Views: Razor pages for rendering UI
+  - Models: Data models for the views
+  - Services: Client services for API communication
+
+- **TodoListApp.WebApi**: Backend RESTful API
+  - Controllers: API endpoints for CRUD operations
+  - Models: Request and response models
+  - Services: Business logic implementation
+  - Data: Entity Framework context and entity models
+
+## Development Guidelines
+
+- Follow the RESTful API principles for all API endpoints
+- Implement proper error handling with meaningful HTTP status codes
+- Use dependency injection for service resolution
+- Document public classes and methods with XML comments
+- Follow code quality standards enforced by StyleCop and .NET analyzers
+- Use Entity Framework migrations for database schema updates
+
+## Code Quality
+
+The project enforces high code quality standards through:
+- .NET code analyzers
+- StyleCop for style consistency
+- XML documentation requirements
+- Adherence to framework design guidelines

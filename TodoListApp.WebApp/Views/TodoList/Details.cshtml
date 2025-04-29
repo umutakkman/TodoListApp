@@ -1,59 +1,105 @@
 @model TodoListApp.WebApi.Models.ApiModels.TodoListWebApiModel
+@using TaskStatus = TodoListApp.Common.TaskStatus;
 
 @{
 	ViewData["Title"] = "Todo List Details";
 }
 
 <div class="container my-5">
-	<div class="card shadow-sm border-0">
-		<div class="card-header bg-white border-bottom">
-			<h1 class="card-title mb-0">@Model.Title</h1>
+	<div class="card todo-card shadow border-0">
+		<div class="card-header bg-white py-3">
+			<div class="d-flex justify-content-between align-items-center">
+				<h1 class="card-title fs-3 mb-0">@Model.Title</h1>
+				<div>
+					<a asp-action="Index" class="btn btn-outline-secondary">
+						<i class="bi bi-arrow-left me-1"></i> Back
+					</a>
+				</div>
+			</div>
 		</div>
 		<div class="card-body">
-			<p>@Model.Description</p>
-			<div class="mb-4">
-				<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">Edit Todo List</a>
-				<a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger me-2">Delete Todo List</a>
-				<a asp-action="Index" class="btn btn-secondary">Back to Todo Lists</a>
+			<div class="p-3 bg-light rounded mb-4">
+				<h5 class="text-muted mb-2">Description</h5>
+				<p class="mb-0">@(string.IsNullOrEmpty(Model.Description) ? "No description provided" : Model.Description)</p>
 			</div>
-			<hr />
-			<h2>Task Items</h2>
-			<div class="mb-3">
-				<a asp-controller="TaskItem" asp-action="Create" asp-route-todoListId="@Model.Id" class="btn btn-primary">Add New Task</a>
+
+			<div class="d-flex justify-content-end mb-4">
+				<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
+					<i class="bi bi-pencil me-1"></i> Edit
+				</a>
+				<a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+					<i class="bi bi-trash me-1"></i> Delete
+				</a>
 			</div>
-			@if (Model.TaskItems != null && Model.TaskItems.Any())
-			{
-				<div class="table-responsive">
-					<table class="table table-hover">
-						<caption>Details of todo list</caption>
-						<thead>
-							<tr>
-								<th>Title</th>
-								<th>Due Date</th>
-								<th>Status</th>
-								<th>Actions</th>
-							</tr>
-						</thead>
-						<tbody>
-							@foreach (var task in Model.TaskItems)
-							{
-								<tr class="@(task.DueDate < DateTime.Now ? "table-danger" : "")">
-									<td>@task.Title</td>
-									<td>@task.DueDate.ToString("yyyy-MM-dd")</td>
-									<td>@task.Status</td>
-									<td>
-										<a asp-controller="TaskItem" asp-action="Details" asp-route-id="@task.Id" class="btn btn-info btn-sm">View</a>
-									</td>
-								</tr>
-							}
-						</tbody>
-					</table>
+
+			<div class="card bg-white border">
+				<div class="card-header bg-light">
+					<div class="d-flex justify-content-between align-items-center">
+						<h2 class="fs-4 mb-0">Task Items</h2>
+						<a asp-controller="TaskItem" asp-action="Create" asp-route-todoListId="@Model.Id" class="btn btn-primary btn-sm">
+							<i class="bi bi-plus-circle me-1"></i> Add New Task
+						</a>
+					</div>
 				</div>
-			}
-			else
-			{
-				<p>No task items available for this Todo List.</p>
-			}
+				<div class="card-body p-0">
+					@if (Model.TaskItems != null && Model.TaskItems.Any())
+					{
+						<div class="table-responsive">
+							<table class="table table-hover mb-0">
+								<thead>
+									<tr>
+										<th>Title</th>
+										<th>Due Date</th>
+										<th>Status</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+								<tbody>
+									@foreach (var task in Model.TaskItems)
+									{
+										<tr class="@(task.DueDate < DateTime.Now && task.Status != TaskStatus.Completed ? "task-overdue" : "")">
+											<td class="align-middle fw-medium">@task.Title</td>
+											<td class="align-middle">
+												<span class="@(task.DueDate < DateTime.Now && task.Status != TaskStatus.Completed ? "text-danger" : "")">
+													@task.DueDate.ToString("MMM dd, yyyy")
+												</span>
+											</td>
+											<td class="align-middle">
+												<form asp-controller="TodoList" asp-action="UpdateStatus" method="post" class="d-inline">
+													<input type="hidden" name="id" value="@task.Id" />
+													<input type="hidden" name="todoListId" value="@Model.Id" />
+													<select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+														<option value="NotStarted" selected="@(task.Status == TaskStatus.NotStarted)">
+															Not Started
+														</option>
+														<option value="InProgress" selected="@(task.Status == TaskStatus.InProgress)">
+															In Progress
+														</option>
+														<option value="Completed" selected="@(task.Status == TaskStatus.Completed)">
+															Completed
+														</option>
+													</select>
+												</form>
+											</td>
+											<td>
+												<a asp-controller="TaskItem" asp-action="Details" asp-route-id="@task.Id" class="btn btn-info btn-sm">
+													<i class="bi bi-eye"></i> View
+												</a>
+											</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+					}
+					else
+					{
+						<div class="text-center py-5">
+							<p class="text-muted mb-0">No task items available for this Todo List.</p>
+						</div>
+					}
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

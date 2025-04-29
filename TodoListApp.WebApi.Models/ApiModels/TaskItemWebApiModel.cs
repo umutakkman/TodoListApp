@@ -50,12 +50,12 @@ public class TaskItemWebApiModel
     /// <summary>
     /// Gets the collection of tags associated with the task item.
     /// </summary>
-    public ICollection<TagWebApiModel>? Tags { get; private set; } = new List<TagWebApiModel>();
+    public ICollection<TagWebApiModel>? Tags { get; set; } = new List<TagWebApiModel>();
 
     /// <summary>
     /// Gets the collection of comments associated with the task item.
     /// </summary>
-    public ICollection<CommentWebApiModel>? Comments { get; private set; } = new List<CommentWebApiModel>();
+    public ICollection<CommentWebApiModel>? Comments { get; set; } = new List<CommentWebApiModel>();
 
     public void SetTags(ICollection<TagWebApiModel> tags)
     {

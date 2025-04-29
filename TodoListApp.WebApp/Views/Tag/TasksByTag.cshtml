@@ -1,53 +1,96 @@
 @model IEnumerable<TodoListApp.WebApi.Models.ApiModels.TaskItemWebApiModel>
 @using TodoListApp.Common;
+@using TaskStatus = TodoListApp.Common.TaskStatus;
 
 @{
 	ViewData["Title"] = "Tasks by Tag";
+	var tagName = ViewBag.TagName ?? "Selected Tag";
+	var tagId = Context.Request.RouteValues["tagId"] as string ?? "0";
 }
 
 <div class="container my-5">
-	<div class="card shadow-sm border-0">
-		<div class="card-header bg-white border-bottom">
-			<h1 class="card-title mb-0">@ViewData["Title"]</h1>
+	<div class="card todo-card shadow border-0">
+		<div class="card-header bg-white py-3">
+			<div class="d-flex justify-content-between align-items-center">
+				<h1 class="card-title fs-3 mb-0">
+					<span class="tag-header">
+						<i class="bi bi-tag-fill"></i>@tagName
+					</span>
+				</h1>
+				<a asp-action="Index" class="btn btn-outline-secondary">
+					<i class="bi bi-arrow-left me-1"></i> Back to All Tags
+				</a>
+			</div>
 		</div>
 		<div class="card-body">
 			@if (!Model.Any())
 			{
-				<p>No tasks found for this tag.</p>
+				<div class="alert alert-info d-flex align-items-center" role="alert">
+					<i class="bi bi-info-circle-fill me-2 fs-4"></i>
+					<div>
+						No tasks found with this tag. Try adding this tag to some of your tasks.
+					</div>
+				</div>
 			}
 			else
 			{
-				<table class="table table-hover">
-					<caption>List of all tasks associated with specified tag</caption>
-					<thead>
-						<tr>
-							<th scope="col">Title</th>
-							<th scope="col">Due Date</th>
-							<th scope="col">Status</th>
-							<th scope="col">Actions</th>
-						</tr>
-					</thead>
-					<tbody>
-						@foreach (var task in Model)
-						{
-							<tr class="@(task.DueDate < DateTime.Now ? "table-danger" : "")">
-								<td>@task.Title</td>
-								<td>@task.DueDate.ToString("yyyy-MM-dd HH:mm")</td>
-								<td>@task.Status</td>
-								<td>
-									<a asp-controller="TaskItem"
-									   asp-action="Details"
-									   asp-route-id="@task.Id"
-									   class="btn btn-outline-primary btn-sm">
-										Details
-									</a>
-								</td>
+				<div class="table-responsive">
+					<table class="table table-hover border">
+						<caption class="caption-top mb-2">All tasks tagged with "@tagName"</caption>
+						<thead class="table-light">
+							<tr>
+								<th scope="col" style="width: 40%">Title</th>
+								<th scope="col" style="width: 20%">Due Date</th>
+								<th scope="col" style="width: 20%">Status</th>
+								<th scope="col" style="width: 20%">Actions</th>
 							</tr>
-						}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							@foreach (var task in Model)
+							{
+								<tr class="@(task.DueDate < DateTime.Now && task.Status.ToString() != "Completed" ? "task-overdue" : "")">
+									<td class="align-middle fw-medium">@task.Title</td>
+									<td class="align-middle">
+										<span class="@(task.DueDate < DateTime.Now && task.Status.ToString() != "Completed" ? "text-danger" : "")">
+											<i class="bi bi-calendar-event me-1"></i>
+											@task.DueDate.ToString("MMM dd, yyyy")
+										</span>
+									</td>
+									<td class="align-middle">
+										<form asp-controller="Tag" asp-action="UpdateStatusForTag" method="post" class="d-inline">
+											<input type="hidden" name="id" value="@task.Id" />
+											<input type="hidden" name="tagId" value="@tagId" />
+											<select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+												<option value="NotStarted" selected="@(task.Status == TaskStatus.NotStarted)">
+													Not Started
+												</option>
+												<option value="InProgress" selected="@(task.Status == TaskStatus.InProgress)">
+													In Progress
+												</option>
+												<option value="Completed" selected="@(task.Status == TaskStatus.Completed)">
+													Completed
+												</option>
+											</select>
+										</form>
+									</td>
+									<td>
+										<a asp-controller="TaskItem" asp-action="Details" asp-route-id="@task.Id"
+										   class="btn btn-info btn-sm">
+											<i class="bi bi-eye"></i> View
+										</a>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+
+				<div class="mt-4">
+					<a asp-controller="TaskItem" asp-action="Assigned" class="btn btn-outline-primary">
+						<i class="bi bi-list-task me-1"></i> View All My Tasks
+					</a>
+				</div>
 			}
-			<a asp-action="Index" class="btn btn-outline-secondary mt-3">Back to All Tags</a>
 		</div>
 	</div>
 </div>

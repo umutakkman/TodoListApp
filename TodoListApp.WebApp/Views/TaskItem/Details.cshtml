@@ -6,83 +6,136 @@
 }
 
 <div class="container my-5">
-	<div class="card shadow-sm border-0">
-		<div class="card-header bg-white border-bottom">
-			<h1 class="card-title mb-0">@ViewData["Title"]</h1>
+	<div class="card todo-card shadow border-0">
+		<div class="card-header bg-white py-3">
+			<div class="d-flex justify-content-between align-items-center">
+				<h1 class="card-title fs-3 mb-0">@Model.Title</h1>
+				<div>
+					<a asp-controller="TodoList" asp-action="Details" asp-route-id="@Model.TodoListId" class="btn btn-outline-secondary">
+						<i class="bi bi-arrow-left me-1"></i> Back to List
+					</a>
+				</div>
+			</div>
 		</div>
 		<div class="card-body">
-			<div>
-				<dl class="row">
-					<dt class="col-sm-2">Title</dt>
-					<dd class="col-sm-10">@Model.Title</dd>
-					<dt class="col-sm-2">Description</dt>
-					<dd class="col-sm-10">@Model.Description</dd>
-					<dt class="col-sm-2">Creation Date</dt>
-					<dd class="col-sm-10">@Model.CreationDate</dd>
-					<dt class="col-sm-2">Due Date</dt>
-					<dd class="col-sm-10">@Model.DueDate</dd>
-					<dt class="col-sm-2">Status</dt>
-					<dd class="col-sm-10">@Model.Status</dd>
-				</dl>
+			<div class="row mb-4">
+				<div class="col-md-8">
+					<div class="p-3 bg-light rounded">
+						<h5 class="text-muted mb-3">Task Details</h5>
+						<dl class="row mb-0">
+							<dt class="col-sm-3">Description</dt>
+							<dd class="col-sm-9">@(string.IsNullOrEmpty(Model.Description) ? "No description provided" : Model.Description)</dd>
+
+							<dt class="col-sm-3">Created</dt>
+							<dd class="col-sm-9">
+								<i class="bi bi-calendar-plus me-1"></i>
+								@Model.CreationDate.ToString("MMM dd, yyyy HH:mm")
+							</dd>
+
+							<dt class="col-sm-3">Due Date</dt>
+							<dd class="col-sm-9">
+								<span class="@(Model.DueDate < DateTime.Now && Model.Status != TaskStatus.Completed ? "text-danger" : "")">
+									<i class="bi bi-calendar-event me-1"></i>
+									@Model.DueDate.ToString("MMM dd, yyyy HH:mm")
+								</span>
+							</dd>
+
+							<dt class="col-sm-3">Status</dt>
+							<dd class="col-sm-9">
+								@{
+									var statusClass = Model.Status switch
+									{
+										TaskStatus.NotStarted => "bg-warning text-dark",
+										TaskStatus.InProgress => "bg-info text-dark",
+										TaskStatus.Completed => "bg-success",
+										_ => "bg-secondary"
+									};
+								}
+								<span class="badge @statusClass">@Model.Status</span>
+							</dd>
+						</dl>
+					</div>
+				</div>
+
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0 fs-5">Assigned Tags</h5>
+                        </div>
+                        <div class="card-body">
+                            @if (Model.Tags != null && Model.Tags.Any())
+                            {
+                                <div class="d-flex flex-wrap gap-2">
+                                    @foreach (var tag in Model.Tags)
+                                    {
+                                        <span class="tag-pill">
+                                            <i class="bi bi-tag-fill"></i>@tag.Name
+                                        </span>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted mb-0">No tags assigned.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
 			</div>
 
-			<hr />
-
-			<div>
-				<h3>Assigned Tags</h3>
-				@if (Model.Tags != null && Model.Tags.Any())
-				{
-					<ul class="list-unstyled">
-						@foreach (var tag in Model.Tags)
-						{
-							<li>
-								<span class="badge bg-info">@tag.Name</span>
-							</li>
-						}
-					</ul>
-				}
-				else
-				{
-					<p>No tags assigned.</p>
-				}
+			<div class="card mb-4">
+				<div class="card-header bg-light">
+					<h3 class="fs-5 mb-0">Comments</h3>
+				</div>
+				<div class="card-body">
+					@if (Model.Comments != null && Model.Comments.Any())
+					{
+						<ul class="list-group list-group-flush">
+							@foreach (var comment in Model.Comments)
+							{
+								<li class="list-group-item px-0">
+									<div class="d-flex">
+										<div class="flex-shrink-0 me-3">
+											<div class="bg-light rounded-circle p-2">
+												<i class="bi bi-person-fill fs-4"></i>
+											</div>
+										</div>
+										<div>
+											<p class="mb-1">@comment.Text</p>
+											<small class="text-muted">
+												<i class="bi bi-clock me-1"></i>
+												@comment.CreationDate.ToString("MMM dd, yyyy HH:mm")
+											</small>
+										</div>
+									</div>
+								</li>
+							}
+						</ul>
+					}
+					else
+					{
+						<p class="text-muted mb-0">No comments available.</p>
+					}
+				</div>
 			</div>
 
-			<hr />
-
-			<div>
-				<h3>Comments</h3>
-				@if (Model.Comments != null && Model.Comments.Any())
-				{
-					<ul class="list-unstyled">
-						@foreach (var comment in Model.Comments)
-						{
-							<li class="mb-2">
-								<div>
-									<strong>Comment:</strong> @comment.Text
-								</div>
-								<div>
-									<small>Posted on: @comment.CreationDate.ToString("yyyy-MM-dd HH:mm")</small>
-								</div>
-							</li>
-						}
-					</ul>
-				}
-				else
-				{
-					<p>No comments available.</p>
-				}
-			</div>
-
-			<hr />
-
-			<div>
+			<div class="d-flex justify-content-between">
+				<div>
+					<a asp-controller="TaskItem" asp-action="Assigned" class="btn btn-secondary">
+						<i class="bi bi-list-task me-1"></i> My Tasks
+					</a>
+				</div>
 				@if (isOwner)
 				{
-					<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
-					<a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
-					<a asp-controller="TodoList" asp-action="Details" asp-route-id="@Model.TodoListId" class="btn btn-secondary">Back to List</a>
+					<div>
+						<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
+							<i class="bi bi-pencil me-1"></i> Edit
+						</a>
+						<a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+							<i class="bi bi-trash me-1"></i> Delete
+						</a>
+					</div>
 				}
-				<a asp-controller="TaskItem" asp-action="Assigned" class="btn btn-secondary">Back to Assigned Tasks</a>
 			</div>
 		</div>
 	</div>
